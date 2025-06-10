@@ -13,9 +13,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### プロジェクト構造
 ```
 /
-├── *.html                    # 独立したWebアプリケーション
-├── *.md                     # 分析レポート・ドキュメント
-├── CLAUDE.md                # Claude Code開発ガイド
+├── index.html               # アプリケーション一覧ページ
+├── *.html                   # 独立したWebアプリケーション
+├── img_shooting/            # シューティングゲーム用画像アセット
+│   ├── img00.png           # プレイヤーキャラクター画像
+│   ├── img01.png           # 敵キャラクター画像1
+│   └── img02.png           # 敵キャラクター画像2
+├── *.md                    # 分析レポート・ドキュメント
+├── CLAUDE.md               # Claude Code開発ガイド
 └── application_sequence_diagram.md  # 処理フロー仕様
 ```
 
@@ -45,10 +50,26 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **機能**: 政策データの視覚化、国際比較、タイムライン表示
 - **特徴**: 詳細なCSS視覚化、レスポンシブ対応、統計バッジシステム
 
-#### 4. テニスゲーム (`tennis_game.html`)
+#### 4. ゲームアプリケーション群
+
+##### テニスゲーム (`tennis_game.html`)
 - **機能**: プレイヤー vs AI対戦、マルチボールシステム
 - **ゲーム特徴**: 10秒ごとにボール追加、複数ボール同時処理、AI予測システム
 - **操作**: W/S または矢印キーでパドル操作、スペースキーでゲーム開始
+
+##### シューティングゲーム (`shooting_game.html`)
+- **機能**: 敵機撃墜ゲーム、画像ベースキャラクター、スコアシステム
+- **ゲーム特徴**: Canvas描画、衝突判定、爆発エフェクト、残像効果
+- **操作**: 矢印キーで移動、スペースキーで弾丸発射
+- **画像アセット**: `img_shooting/` フォルダ内の画像を使用（img00.png：プレイヤー、img01.png/img02.png：敵）
+
+##### ボンバーゲーム (`bomber_game.html`)
+- **機能**: 爆弾設置アクションゲーム
+- **操作**: 爆弾を設置して敵を倒すゲームプレイ
+
+##### オセロゲーム (`othello_game.html`)
+- **機能**: クラシックなオセロゲーム
+- **対戦**: コンピューター対戦機能
 
 ### 分析レポート
 
@@ -63,6 +84,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 2. **日本語対応**: フォントスタック `'Hiragino Sans', 'Hiragino Kaku Gothic Pro', 'Yu Gothic', 'Meiryo'`
 3. **レスポンシブデザイン**: モバイルファーストアプローチ
 4. **視覚的一貫性**: グラデーション背景、カードレイアウト、影効果
+5. **index.htmlへの登録**: 新しいアプリケーションを作成したら、必ず `index.html` のアプリケーション一覧に項目を追加する
+
+### ゲーム開発時
+- **Canvas使用**: シューティングゲームなどではHTML5 Canvasを使用した描画
+- **画像アセット管理**: 画像ファイルは専用フォルダに整理（例：`img_shooting/`）
+- **入力処理**: キーボードイベントによるリアルタイム操作
+- **ゲームループ**: requestAnimationFrameを使用した滑らかなアニメーション
+- **衝突判定**: 矩形ベースの衝突検出アルゴリズム
 
 ### インフォグラフィック開発時
 - **セクション構造**: ヘッダー、メイン統計、詳細分析、国際比較、政策提言
@@ -81,10 +110,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### 開発・テスト時の実行コマンド
 ```bash
 # HTMLファイルをブラウザで開く
+open index.html                    # アプリケーション一覧を表示
 open summer_schedule.html          # macOS
 open stock_analyzer.html           # macOS
 open birth_waiting_children_infographic.html  # macOS
 open tennis_game.html              # macOS
+open shooting_game.html            # macOS
+open bomber_game.html              # macOS
+open othello_game.html             # macOS
 
 # または直接ブラウザでファイルを開く
 ```
@@ -104,10 +137,11 @@ open tennis_game.html              # macOS
 3. **インフォグラフィック**:
    - 各ブラウザ・デバイスサイズでのレスポンシブ表示確認
    - 印刷時のレイアウト確認
-4. **テニスゲーム**:
-   - キーボード操作（W/S、矢印キー）の動作確認
-   - マルチボール機能（10秒ごとの追加）テスト
-   - AI対戦相手の挙動確認
+4. **ゲームアプリケーション**:
+   - **テニスゲーム**: キーボード操作（W/S、矢印キー）、マルチボール機能、AI対戦
+   - **シューティングゲーム**: 矢印キー移動、スペースキー射撃、画像読み込み、衝突判定
+   - **ボンバーゲーム**: ゲームプレイ動作確認
+   - **オセロゲーム**: コンピューター対戦機能確認
 
 ## 開発時の注意点
 
