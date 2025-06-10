@@ -158,6 +158,15 @@
                 // 敵のスポーン管理
                 this.enemySpawnTimer = 0;
                 this.enemySpawnInterval = 60; // 60フレーム毎
+                this.currentEnemyIndex = 0;
+                
+                // 画像の設定
+                this.playerImage = null;
+                this.enemyImages = [];
+                this.playerImagePath = 'img_shooting/img00.png';
+                this.enemyImagePaths = ['img_shooting/img01.png', 'img_shooting/img02.png'];
+                this.imagesLoaded = 0;
+                this.totalImages = 3; // プレイヤー画像1枚 + 敵画像2枚
                 
                 this.init();
             }
@@ -165,7 +174,44 @@
             init() {
                 this.setupEventListeners();
                 this.createStars();
-                this.startGame();
+                this.loadAllImages();
+            }
+
+            loadAllImages() {
+                // プレイヤー画像を読み込み
+                this.playerImage = new Image();
+                this.playerImage.onload = () => {
+                    this.imagesLoaded++;
+                    this.checkAllImagesLoaded();
+                };
+                this.playerImage.onerror = () => {
+                    console.warn(`Failed to load player image: ${this.playerImagePath}`);
+                    this.imagesLoaded++;
+                    this.checkAllImagesLoaded();
+                };
+                this.playerImage.src = this.playerImagePath;
+
+                // 敵画像を読み込み
+                this.enemyImagePaths.forEach((path, index) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        this.imagesLoaded++;
+                        this.checkAllImagesLoaded();
+                    };
+                    img.onerror = () => {
+                        console.warn(`Failed to load enemy image: ${path}`);
+                        this.imagesLoaded++;
+                        this.checkAllImagesLoaded();
+                    };
+                    img.src = path;
+                    this.enemyImages[index] = img;
+                });
+            }
+
+            checkAllImagesLoaded() {
+                if (this.imagesLoaded === this.totalImages) {
+                    this.startGame();
+                }
             }
 
             setupEventListeners() {
@@ -260,12 +306,14 @@
                 this.enemySpawnTimer++;
                 if (this.enemySpawnTimer >= this.enemySpawnInterval) {
                     this.enemySpawnTimer = 0;
+                    const enemySize = 50; // 敵のサイズを大きく
                     this.enemies.push({
-                        x: Math.random() * (this.canvas.width - 30),
-                        y: -30,
-                        width: 30,
-                        height: 30,
-                        speed: 2 + Math.random() * 2
+                        x: Math.random() * (this.canvas.width - enemySize),
+                        y: -enemySize,
+                        width: enemySize,
+                        height: enemySize,
+                        speed: 2 + Math.random() * 2,
+                        imageIndex: this.currentEnemyIndex % this.enemyImages.length
                     });
                 }
             }
@@ -297,6 +345,8 @@
                             this.bullets.splice(i, 1);
                             this.enemies.splice(j, 1);
                             this.score += 10;
+                            // 敵を倒したら次の敵タイプに切り替え
+                            this.currentEnemyIndex++;
                             break;
                         }
                     }
@@ -337,17 +387,21 @@
             }
 
             draw() {
-                // 背景をクリア
-                this.ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+                // 背景をクリア（残像を短くするため透明度を上げる）
+                this.ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
                 this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
                 // プレイヤーを描画
-                this.ctx.fillStyle = '#00ff88';
-                this.ctx.fillRect(this.player.x, this.player.y, this.player.width, this.player.height);
-                
-                // プレイヤーの詳細を描画
-                this.ctx.fillStyle = '#ffffff';
-                this.ctx.fillRect(this.player.x + 15, this.player.y + 10, 10, 20);
+                if (this.playerImage && this.playerImage.complete) {
+                    // プレイヤー画像を描画
+                    this.ctx.drawImage(this.playerImage, this.player.x, this.player.y, this.player.width, this.player.height);
+                } else {
+                    // 画像が読み込めない場合は従来の矩形で描画
+                    this.ctx.fillStyle = '#00ff88';
+                    this.ctx.fillRect(this.player.x, this.player.y, this.player.width, this.player.height);
+                    this.ctx.fillStyle = '#ffffff';
+                    this.ctx.fillRect(this.player.x + 15, this.player.y + 10, 10, 20);
+                }
 
                 // 弾丸を描画
                 this.ctx.fillStyle = '#ffff00';
@@ -356,9 +410,16 @@
                 });
 
                 // 敵を描画
-                this.ctx.fillStyle = '#ff6b6b';
                 this.enemies.forEach(enemy => {
-                    this.ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+                    const img = this.enemyImages[enemy.imageIndex];
+                    if (img && img.complete) {
+                        // 画像を800x800から敵のサイズにリサイズして描画
+                        this.ctx.drawImage(img, enemy.x, enemy.y, enemy.width, enemy.height);
+                    } else {
+                        // 画像が読み込めない場合は従来の矩形で描画
+                        this.ctx.fillStyle = '#ff6b6b';
+                        this.ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+                    }
                 });
 
                 // パーティクルを描画
@@ -389,9 +450,11 @@
                 this.player.x = 400;
                 this.player.y = 500;
                 this.enemySpawnTimer = 0;
+                this.currentEnemyIndex = 0; // 敵タイプをリセット
+                this.imagesLoaded = 0; // 画像読み込み状態をリセット
                 
                 document.getElementById('gameOverScreen').style.display = 'none';
-                this.startGame();
+                this.loadAllImages(); // 画像を再読み込みしてからゲーム開始
             }
         }
 
