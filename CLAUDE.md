@@ -1,5 +1,7 @@
 # CLAUDE.md
 
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 このファイルは、このリポジトリのコードを扱う際のClaude Code (claude.ai/code) へのガイダンスを提供します。
 
 ## プロジェクト概要
@@ -43,6 +45,11 @@
 - **機能**: 政策データの視覚化、国際比較、タイムライン表示
 - **特徴**: 詳細なCSS視覚化、レスポンシブ対応、統計バッジシステム
 
+#### 4. テニスゲーム (`tennis_game.html`)
+- **機能**: プレイヤー vs AI対戦、マルチボールシステム
+- **ゲーム特徴**: 10秒ごとにボール追加、複数ボール同時処理、AI予測システム
+- **操作**: W/S または矢印キーでパドル操作、スペースキーでゲーム開始
+
 ### 分析レポート
 
 #### 出生数・待機児童数関係性レポート (`birth_and_waiting_children_report.md`)
@@ -77,6 +84,7 @@
 open summer_schedule.html          # macOS
 open stock_analyzer.html           # macOS
 open birth_waiting_children_infographic.html  # macOS
+open tennis_game.html              # macOS
 
 # または直接ブラウザでファイルを開く
 ```
@@ -96,6 +104,10 @@ open birth_waiting_children_infographic.html  # macOS
 3. **インフォグラフィック**:
    - 各ブラウザ・デバイスサイズでのレスポンシブ表示確認
    - 印刷時のレイアウト確認
+4. **テニスゲーム**:
+   - キーボード操作（W/S、矢印キー）の動作確認
+   - マルチボール機能（10秒ごとの追加）テスト
+   - AI対戦相手の挙動確認
 
 ## 開発時の注意点
 

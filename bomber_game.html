@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ボンバーバトル</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic Pro', 'Yu Gothic', 'Meiryo', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: white;
+        }
+
+        .game-container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        #gameCanvas {
+            border: 3px solid white;
+            border-radius: 10px;
+            background: #2c3e50;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .game-info {
+            margin: 20px 0;
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .controls {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        .controls h3 {
+            margin-top: 0;
+            color: #ffeb3b;
+        }
+
+        .control-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+        }
+
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            display: none;
+        }
+
+        .restart-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .restart-btn:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>💣 ボンバーバトル</h1>
+        <div class="game-info">
+            <span>プレイヤー: <span id="playerHealth">❤️❤️❤️</span></span>
+            <span>コンピュータ: <span id="aiHealth">❤️❤️❤️</span></span>
+        </div>
+        <canvas id="gameCanvas" width="600" height="600"></canvas>
+        <div class="controls">
+            <h3>操作方法</h3>
+            <div class="control-row">
+                <span><strong>移動:</strong> ↑↓←→ キー</span>
+                <span><strong>爆弾設置:</strong> スペースキー</span>
+            </div>
+            <div style="margin-top: 15px;">
+                <strong>ゲーム開始:</strong> Enterキーを押してください
+            </div>
+        </div>
+        <div class="controls">
+            <h3>ゲームルール</h3>
+            <div style="font-size: 1em; line-height: 1.5;">
+                ・ 爆弾は5秒後に爆発します<br>
+                ・ 爆発範囲は上下左右3ブロック<br>
+                ・ ブロックの影に隠れて爆発を回避しよう<br>
+                ・ 相手を3回爆発に巻き込むと勝利
+            </div>
+        </div>
+        <div class="game-over" id="gameOver">
+            <h2 id="winnerText"></h2>
+            <button class="restart-btn" onclick="restartGame()">再スタート</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // ゲーム設定
+        const GRID_SIZE = 30;
+        const COLS = canvas.width / GRID_SIZE;
+        const ROWS = canvas.height / GRID_SIZE;
+
+        // ゲーム状態
+        let gameState = {
+            isPlaying: false,
+            playerHealth: 3,
+            aiHealth: 3,
+            bombs: [],
+            explosions: []
+        };
+
+        // マップ (0: 空, 1: 固定壁, 2: 破壊可能壁)
+        let gameMap = [];
+
+        // プレイヤー
+        const player = {
+            x: 1,
+            y: 1,
+            color: '#3498db'
+        };
+
+        // AI
+        const ai = {
+            x: COLS - 2,
+            y: ROWS - 2,
+            color: '#e74c3c',
+            lastMoveTime: 0,
+            target: null
+        };
+        
+        // 移動スピード制御
+        let playerLastMoveTime = 0;
+        const MOVE_DELAY = 200; // 200msごとに移動可能
+
+        // キーボード入力
+        const keys = {};
+
+        document.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+            if (e.key === 'Enter') {
+                if (!gameState.isPlaying) {
+                    startGame();
+                }
+            }
+        });
+
+        document.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+        });
+
+        function initializeMap() {
+            gameMap = [];
+            for (let y = 0; y < ROWS; y++) {
+                gameMap[y] = [];
+                for (let x = 0; x < COLS; x++) {
+                    if (x === 0 || x === COLS - 1 || y === 0 || y === ROWS - 1) {
+                        gameMap[y][x] = 1; // 外壁
+                    } else if (x % 2 === 0 && y % 2 === 0) {
+                        gameMap[y][x] = 1; // 固定ブロック
+                    } else if ((x === 1 && y === 1) || (x === 2 && y === 1) || (x === 1 && y === 2) ||
+                               (x === COLS - 2 && y === ROWS - 2) || (x === COLS - 3 && y === ROWS - 2) || (x === COLS - 2 && y === ROWS - 3)) {
+                        gameMap[y][x] = 0; // プレイヤー・AI周辺は空
+                    } else if (Math.random() < 0.3) {
+                        gameMap[y][x] = 2; // 破壊可能壁
+                    } else {
+                        gameMap[y][x] = 0; // 空
+                    }
+                }
+            }
+        }
+
+        function startGame() {
+            gameState.isPlaying = true;
+            gameState.playerHealth = 3;
+            gameState.aiHealth = 3;
+            gameState.bombs = [];
+            gameState.explosions = [];
+            
+            player.x = 1;
+            player.y = 1;
+            ai.x = COLS - 2;
+            ai.y = ROWS - 2;
+            
+            initializeMap();
+            updateHealthDisplay();
+            document.getElementById('gameOver').style.display = 'none';
+            gameLoop();
+        }
+
+        function updateHealthDisplay() {
+            document.getElementById('playerHealth').textContent = '❤️'.repeat(gameState.playerHealth);
+            document.getElementById('aiHealth').textContent = '❤️'.repeat(gameState.aiHealth);
+        }
+
+        function canMoveTo(x, y) {
+            if (x < 0 || x >= COLS || y < 0 || y >= ROWS) return false;
+            return gameMap[y][x] === 0;
+        }
+
+        function updatePlayer() {
+            const currentTime = Date.now();
+            
+            // 移動スピード制御
+            if (currentTime - playerLastMoveTime < MOVE_DELAY) return;
+            
+            // プレイヤー移動
+            let moved = false;
+            if (keys['ArrowUp'] && canMoveTo(player.x, player.y - 1)) {
+                player.y--;
+                moved = true;
+            }
+            if (keys['ArrowDown'] && canMoveTo(player.x, player.y + 1)) {
+                player.y++;
+                moved = true;
+            }
+            if (keys['ArrowLeft'] && canMoveTo(player.x - 1, player.y)) {
+                player.x--;
+                moved = true;
+            }
+            if (keys['ArrowRight'] && canMoveTo(player.x + 1, player.y)) {
+                player.x++;
+                moved = true;
+            }
+            
+            if (moved) {
+                playerLastMoveTime = currentTime;
+            }
+
+            // 爆弾設置
+            if (keys[' ']) {
+                placeBomb(player.x, player.y, 'player');
+                keys[' '] = false; // 連続設置防止
+            }
+        }
+
+        function updateAI() {
+            const currentTime = Date.now();
+            
+            // 0.8秒ごとに行動（よりゆっくり）
+            if (currentTime - ai.lastMoveTime < 800) return;
+            ai.lastMoveTime = currentTime;
+
+            // 危険エリアをチェック
+            const dangerZones = getDangerZones();
+            const aiInDanger = dangerZones.some(zone => zone.x === ai.x && zone.y === ai.y);
+
+            if (aiInDanger) {
+                // 逃げる
+                const safeMoves = getSafeMoves(ai.x, ai.y, dangerZones);
+                if (safeMoves.length > 0) {
+                    const move = safeMoves[Math.floor(Math.random() * safeMoves.length)];
+                    ai.x = move.x;
+                    ai.y = move.y;
+                }
+            } else {
+                // プレイヤーに近づくか爆弾を設置
+                const distanceToPlayer = Math.abs(ai.x - player.x) + Math.abs(ai.y - player.y);
+                
+                if (distanceToPlayer <= 4 && Math.random() < 0.3) {
+                    // 爆弾設置
+                    placeBomb(ai.x, ai.y, 'ai');
+                } else {
+                    // プレイヤーに向かって移動
+                    moveAITowardsPlayer();
+                }
+            }
+        }
+
+        function getDangerZones() {
+            const zones = [];
+            gameState.bombs.forEach(bomb => {
+                // 爆弾の位置
+                zones.push({x: bomb.x, y: bomb.y});
+                
+                // 上下左右3ブロック
+                for (let i = 1; i <= 3; i++) {
+                    if (canExplosionReach(bomb.x, bomb.y - i)) zones.push({x: bomb.x, y: bomb.y - i});
+                    if (canExplosionReach(bomb.x, bomb.y + i)) zones.push({x: bomb.x, y: bomb.y + i});
+                    if (canExplosionReach(bomb.x - i, bomb.y)) zones.push({x: bomb.x - i, y: bomb.y});
+                    if (canExplosionReach(bomb.x + i, bomb.y)) zones.push({x: bomb.x + i, y: bomb.y});
+                }
+            });
+            return zones;
+        }
+
+        function canExplosionReach(x, y) {
+            if (x < 0 || x >= COLS || y < 0 || y >= ROWS) return false;
+            return gameMap[y][x] !== 1; // 固定壁でブロック
+        }
+
+        function getSafeMoves(x, y, dangerZones) {
+            const moves = [];
+            const directions = [{x: 0, y: -1}, {x: 0, y: 1}, {x: -1, y: 0}, {x: 1, y: 0}];
+            
+            directions.forEach(dir => {
+                const newX = x + dir.x;
+                const newY = y + dir.y;
+                if (canMoveTo(newX, newY)) {
+                    const isDangerous = dangerZones.some(zone => zone.x === newX && zone.y === newY);
+                    if (!isDangerous) {
+                        moves.push({x: newX, y: newY});
+                    }
+                }
+            });
+            
+            return moves;
+        }
+
+        function moveAITowardsPlayer() {
+            const directions = [];
+            
+            if (ai.x < player.x && canMoveTo(ai.x + 1, ai.y)) {
+                directions.push({x: ai.x + 1, y: ai.y});
+            }
+            if (ai.x > player.x && canMoveTo(ai.x - 1, ai.y)) {
+                directions.push({x: ai.x - 1, y: ai.y});
+            }
+            if (ai.y < player.y && canMoveTo(ai.x, ai.y + 1)) {
+                directions.push({x: ai.x, y: ai.y + 1});
+            }
+            if (ai.y > player.y && canMoveTo(ai.x, ai.y - 1)) {
+                directions.push({x: ai.x, y: ai.y - 1});
+            }
+            
+            if (directions.length > 0) {
+                const move = directions[Math.floor(Math.random() * directions.length)];
+                ai.x = move.x;
+                ai.y = move.y;
+            }
+        }
+
+        function placeBomb(x, y, owner) {
+            // 既に爆弾があるかチェック
+            const existingBomb = gameState.bombs.find(bomb => bomb.x === x && bomb.y === y);
+            if (existingBomb) return;
+
+            gameState.bombs.push({
+                x: x,
+                y: y,
+                owner: owner,
+                timer: 5000, // 5秒
+                startTime: Date.now()
+            });
+        }
+
+        function updateBombs() {
+            const currentTime = Date.now();
+            
+            for (let i = gameState.bombs.length - 1; i >= 0; i--) {
+                const bomb = gameState.bombs[i];
+                const elapsed = currentTime - bomb.startTime;
+                
+                if (elapsed >= bomb.timer) {
+                    // 爆発
+                    explodeBomb(bomb);
+                    gameState.bombs.splice(i, 1);
+                }
+            }
+        }
+
+        function explodeBomb(bomb) {
+            const explosionCells = [];
+            
+            // 爆弾の位置
+            explosionCells.push({x: bomb.x, y: bomb.y});
+            
+            // 上下左右3ブロック
+            const directions = [{x: 0, y: -1}, {x: 0, y: 1}, {x: -1, y: 0}, {x: 1, y: 0}];
+            
+            directions.forEach(dir => {
+                for (let i = 1; i <= 3; i++) {
+                    const x = bomb.x + (dir.x * i);
+                    const y = bomb.y + (dir.y * i);
+                    
+                    if (x < 0 || x >= COLS || y < 0 || y >= ROWS) break;
+                    if (gameMap[y][x] === 1) break; // 固定壁で停止
+                    
+                    explosionCells.push({x: x, y: y});
+                    
+                    if (gameMap[y][x] === 2) {
+                        gameMap[y][x] = 0; // 破壊可能壁を破壊
+                        break;
+                    }
+                }
+            });
+            
+            // 爆発エフェクト
+            gameState.explosions.push({
+                cells: explosionCells,
+                startTime: Date.now(),
+                duration: 500
+            });
+            
+            // ダメージ判定
+            explosionCells.forEach(cell => {
+                if (cell.x === player.x && cell.y === player.y) {
+                    gameState.playerHealth--;
+                }
+                if (cell.x === ai.x && cell.y === ai.y) {
+                    gameState.aiHealth--;
+                }
+            });
+            
+            updateHealthDisplay();
+            
+            // ゲーム終了チェック
+            if (gameState.playerHealth <= 0 || gameState.aiHealth <= 0) {
+                endGame();
+            }
+        }
+
+        function updateExplosions() {
+            const currentTime = Date.now();
+            
+            for (let i = gameState.explosions.length - 1; i >= 0; i--) {
+                const explosion = gameState.explosions[i];
+                if (currentTime - explosion.startTime >= explosion.duration) {
+                    gameState.explosions.splice(i, 1);
+                }
+            }
+        }
+
+        function endGame() {
+            gameState.isPlaying = false;
+            let winner;
+            if (gameState.playerHealth <= 0 && gameState.aiHealth <= 0) {
+                winner = '引き分け';
+            } else if (gameState.playerHealth <= 0) {
+                winner = 'コンピュータの勝利';
+            } else {
+                winner = 'プレイヤーの勝利';
+            }
+            
+            document.getElementById('winnerText').textContent = `🏆 ${winner}！`;
+            document.getElementById('gameOver').style.display = 'block';
+        }
+
+        function restartGame() {
+            startGame();
+        }
+
+        function draw() {
+            // 背景をクリア
+            ctx.fillStyle = '#34495e';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // マップを描画
+            for (let y = 0; y < ROWS; y++) {
+                for (let x = 0; x < COLS; x++) {
+                    const cellX = x * GRID_SIZE;
+                    const cellY = y * GRID_SIZE;
+                    
+                    if (gameMap[y][x] === 1) {
+                        // 固定壁
+                        ctx.fillStyle = '#2c3e50';
+                        ctx.fillRect(cellX, cellY, GRID_SIZE, GRID_SIZE);
+                        ctx.strokeStyle = '#1a252f';
+                        ctx.strokeRect(cellX, cellY, GRID_SIZE, GRID_SIZE);
+                    } else if (gameMap[y][x] === 2) {
+                        // 破壊可能壁
+                        ctx.fillStyle = '#95a5a6';
+                        ctx.fillRect(cellX, cellY, GRID_SIZE, GRID_SIZE);
+                        ctx.strokeStyle = '#7f8c8d';
+                        ctx.strokeRect(cellX, cellY, GRID_SIZE, GRID_SIZE);
+                    }
+                }
+            }
+
+            // 爆発を描画（リアルな炎のグラデーション）
+            gameState.explosions.forEach(explosion => {
+                const elapsed = Date.now() - explosion.startTime;
+                const progress = elapsed / explosion.duration;
+                
+                explosion.cells.forEach(cell => {
+                    const cellX = cell.x * GRID_SIZE;
+                    const cellY = cell.y * GRID_SIZE;
+                    
+                    // 炎のグラデーション作成
+                    const gradient = ctx.createRadialGradient(
+                        cellX + GRID_SIZE/2, cellY + GRID_SIZE/2, 0,
+                        cellX + GRID_SIZE/2, cellY + GRID_SIZE/2, GRID_SIZE/2
+                    );
+                    
+                    // 時間経過で炎の色が変化
+                    const intensity = 1 - progress;
+                    gradient.addColorStop(0, `rgba(255, 255, 255, ${intensity * 0.8})`);
+                    gradient.addColorStop(0.3, `rgba(255, 200, 0, ${intensity})`);
+                    gradient.addColorStop(0.6, `rgba(255, 100, 0, ${intensity * 0.9})`);
+                    gradient.addColorStop(1, `rgba(200, 0, 0, ${intensity * 0.7})`);
+                    
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(cellX, cellY, GRID_SIZE, GRID_SIZE);
+                    
+                    // 炎の揺らめき効果
+                    if (Math.random() < 0.3) {
+                        const flickerGradient = ctx.createRadialGradient(
+                            cellX + GRID_SIZE/2 + (Math.random() - 0.5) * 10,
+                            cellY + GRID_SIZE/2 + (Math.random() - 0.5) * 10, 0,
+                            cellX + GRID_SIZE/2, cellY + GRID_SIZE/2, GRID_SIZE/3
+                        );
+                        flickerGradient.addColorStop(0, `rgba(255, 255, 100, ${intensity * 0.6})`);
+                        flickerGradient.addColorStop(1, 'rgba(255, 255, 100, 0)');
+                        ctx.fillStyle = flickerGradient;
+                        ctx.fillRect(cellX, cellY, GRID_SIZE, GRID_SIZE);
+                    }
+                });
+            });
+
+            // 爆弾を描画
+            gameState.bombs.forEach(bomb => {
+                const elapsed = Date.now() - bomb.startTime;
+                const flashRate = Math.max(100, 500 - elapsed);
+                const isFlashing = Math.floor(elapsed / flashRate) % 2 === 0;
+                
+                ctx.fillStyle = isFlashing ? '#e74c3c' : '#c0392b';
+                ctx.fillRect(bomb.x * GRID_SIZE + 2, bomb.y * GRID_SIZE + 2, GRID_SIZE - 4, GRID_SIZE - 4);
+                
+                // タイマー表示
+                ctx.fillStyle = 'white';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'center';
+                const timeLeft = Math.ceil((bomb.timer - elapsed) / 1000);
+                ctx.fillText(timeLeft, bomb.x * GRID_SIZE + GRID_SIZE/2, bomb.y * GRID_SIZE + GRID_SIZE/2 + 4);
+            });
+
+            // プレイヤーアイコンを描画
+            const playerX = player.x * GRID_SIZE;
+            const playerY = player.y * GRID_SIZE;
+            
+            // プレイヤー背景円
+            ctx.fillStyle = player.color;
+            ctx.beginPath();
+            ctx.arc(playerX + GRID_SIZE/2, playerY + GRID_SIZE/2, GRID_SIZE/2 - 2, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // プレイヤー絵文字
+            ctx.font = `${GRID_SIZE - 8}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = 'white';
+            ctx.fillText('😊', playerX + GRID_SIZE/2, playerY + GRID_SIZE/2);
+            
+            // AIアイコンを描画
+            const aiX = ai.x * GRID_SIZE;
+            const aiY = ai.y * GRID_SIZE;
+            
+            // AI背景円
+            ctx.fillStyle = ai.color;
+            ctx.beginPath();
+            ctx.arc(aiX + GRID_SIZE/2, aiY + GRID_SIZE/2, GRID_SIZE/2 - 2, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // AI絵文字
+            ctx.fillStyle = 'white';
+            ctx.fillText('🤖', aiX + GRID_SIZE/2, aiY + GRID_SIZE/2);
+
+            // ゲーム開始待ち
+            if (!gameState.isPlaying && gameState.playerHealth === 3 && gameState.aiHealth === 3) {
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                ctx.font = '24px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('Enterキーでゲーム開始', canvas.width / 2, canvas.height / 2);
+            }
+        }
+
+        function gameLoop() {
+            if (gameState.isPlaying) {
+                updatePlayer();
+                updateAI();
+                updateBombs();
+                updateExplosions();
+            }
+            draw();
+            
+            if (gameState.isPlaying) {
+                requestAnimationFrame(gameLoop);
+            }
+        }
+
+        // 初期描画
+        initializeMap();
+        draw();
+    </script>
+</body>
+</html>

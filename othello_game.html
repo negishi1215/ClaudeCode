@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8x8オセロゲーム</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic Pro', 'Yu Gothic', 'Meiryo', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: white;
+        }
+
+        .game-container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .game-info {
+            margin: 20px 0;
+            display: flex;
+            justify-content: space-around;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stone {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-block;
+            border: 2px solid #333;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .black-stone {
+            background: radial-gradient(circle at 30% 30%, #666, #000);
+        }
+
+        .white-stone {
+            background: radial-gradient(circle at 30% 30%, #fff, #ccc);
+        }
+
+        .current-player {
+            background: rgba(255, 255, 0, 0.3);
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        #gameBoard {
+            border: 3px solid #2c3e50;
+            border-radius: 10px;
+            background: #27ae60;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            margin: 20px auto;
+            cursor: pointer;
+        }
+
+        .controls {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        .controls h3 {
+            margin-top: 0;
+            color: #ffeb3b;
+        }
+
+        .restart-btn {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .restart-btn:hover {
+            background: #45a049;
+        }
+
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            display: none;
+        }
+
+        .valid-move {
+            background: rgba(255, 255, 0, 0.3) !important;
+        }
+
+        .last-move {
+            box-shadow: 0 0 10px rgba(255, 255, 0, 0.8) !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>⚫⚪ 8×8オセロ</h1>
+        <div class="game-info">
+            <div class="player-info" id="playerInfo">
+                <span class="stone black-stone"></span>
+                <span>プレイヤー: <span id="playerScore">4</span></span>
+            </div>
+            <div class="player-info" id="aiInfo">
+                <span class="stone white-stone"></span>
+                <span>コンピュータ: <span id="aiScore">4</span></span>
+            </div>
+        </div>
+        <div id="currentTurn" style="font-size: 1.2em; margin: 10px 0;">プレイヤーのターン</div>
+        <canvas id="gameBoard" width="450" height="450"></canvas>
+        <div class="controls">
+            <h3>ゲームルール</h3>
+            <div style="font-size: 1em; line-height: 1.5;">
+                ・ 黒石（プレイヤー）と白石（コンピュータ）を交互に配置<br>
+                ・ 相手の石を挟んで自分の色に変える<br>
+                ・ 置ける場所がない場合はパス<br>
+                ・ 最終的に石の数が多い方が勝利
+            </div>
+            <button class="restart-btn" onclick="restartGame()">新しいゲーム</button>
+        </div>
+        <div class="game-over" id="gameOver">
+            <h2 id="winnerText"></h2>
+            <button class="restart-btn" onclick="restartGame()">再スタート</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameBoard');
+        const ctx = canvas.getContext('2d');
+
+        // ゲーム設定
+        const BOARD_SIZE = 8;
+        const CELL_SIZE = 56.25;
+        const STONE_RADIUS = 20;
+
+        // ゲーム状態
+        let gameState = {
+            board: [],
+            currentPlayer: 1, // 1: プレイヤー(黒), -1: AI(白)
+            gameOver: false,
+            lastMove: null,
+            aiThinking: false
+        };
+
+        // 方向ベクトル（8方向）
+        const directions = [
+            [-1, -1], [-1, 0], [-1, 1],
+            [0, -1],           [0, 1],
+            [1, -1],  [1, 0],  [1, 1]
+        ];
+
+        function initializeGame() {
+            // ボードの初期化
+            gameState.board = [];
+            for (let i = 0; i < BOARD_SIZE; i++) {
+                gameState.board[i] = new Array(BOARD_SIZE).fill(0);
+            }
+
+            // 初期配置（中央4石）
+            const center = Math.floor(BOARD_SIZE / 2);
+            gameState.board[center - 1][center - 1] = -1; // 白
+            gameState.board[center - 1][center] = 1;      // 黒
+            gameState.board[center][center - 1] = 1;      // 黒
+            gameState.board[center][center] = -1;         // 白
+
+            gameState.currentPlayer = 1;
+            gameState.gameOver = false;
+            gameState.lastMove = null;
+            gameState.aiThinking = false;
+
+            updateUI();
+            drawBoard();
+        }
+
+        function isValidMove(row, col, player) {
+            if (gameState.board[row][col] !== 0) return false;
+
+            for (let [dr, dc] of directions) {
+                if (checkDirection(row, col, dr, dc, player)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function checkDirection(row, col, dr, dc, player) {
+            let r = row + dr;
+            let c = col + dc;
+            let hasOpponent = false;
+
+            while (r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE) {
+                if (gameState.board[r][c] === 0) {
+                    return false;
+                } else if (gameState.board[r][c] === -player) {
+                    hasOpponent = true;
+                } else if (gameState.board[r][c] === player) {
+                    return hasOpponent;
+                }
+                r += dr;
+                c += dc;
+            }
+            return false;
+        }
+
+        function makeMove(row, col, player) {
+            if (!isValidMove(row, col, player)) return false;
+
+            gameState.board[row][col] = player;
+            gameState.lastMove = {row, col};
+
+            // 石を反転
+            for (let [dr, dc] of directions) {
+                if (checkDirection(row, col, dr, dc, player)) {
+                    flipStones(row, col, dr, dc, player);
+                }
+            }
+
+            return true;
+        }
+
+        function flipStones(row, col, dr, dc, player) {
+            let r = row + dr;
+            let c = col + dc;
+
+            while (r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE) {
+                if (gameState.board[r][c] === player) {
+                    break;
+                } else if (gameState.board[r][c] === -player) {
+                    gameState.board[r][c] = player;
+                }
+                r += dr;
+                c += dc;
+            }
+        }
+
+        function getValidMoves(player) {
+            const moves = [];
+            for (let row = 0; row < BOARD_SIZE; row++) {
+                for (let col = 0; col < BOARD_SIZE; col++) {
+                    if (isValidMove(row, col, player)) {
+                        moves.push({row, col});
+                    }
+                }
+            }
+            return moves;
+        }
+
+        function hasValidMoves(player) {
+            return getValidMoves(player).length > 0;
+        }
+
+        function switchPlayer() {
+            gameState.currentPlayer = -gameState.currentPlayer;
+        }
+
+        function updateUI() {
+            let playerCount = 0;
+            let aiCount = 0;
+
+            for (let row = 0; row < BOARD_SIZE; row++) {
+                for (let col = 0; col < BOARD_SIZE; col++) {
+                    if (gameState.board[row][col] === 1) playerCount++;
+                    else if (gameState.board[row][col] === -1) aiCount++;
+                }
+            }
+
+            document.getElementById('playerScore').textContent = playerCount;
+            document.getElementById('aiScore').textContent = aiCount;
+
+            // 現在のプレイヤー表示
+            const playerInfo = document.getElementById('playerInfo');
+            const aiInfo = document.getElementById('aiInfo');
+            
+            playerInfo.classList.remove('current-player');
+            aiInfo.classList.remove('current-player');
+
+            if (gameState.currentPlayer === 1) {
+                playerInfo.classList.add('current-player');
+                document.getElementById('currentTurn').textContent = 'プレイヤーのターン';
+            } else {
+                aiInfo.classList.add('current-player');
+                document.getElementById('currentTurn').textContent = 'コンピュータのターン';
+            }
+        }
+
+        function drawBoard() {
+            // 背景
+            ctx.fillStyle = '#27ae60';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // グリッド線
+            ctx.strokeStyle = '#2c3e50';
+            ctx.lineWidth = 2;
+
+            for (let i = 0; i <= BOARD_SIZE; i++) {
+                // 縦線
+                ctx.beginPath();
+                ctx.moveTo(i * CELL_SIZE, 0);
+                ctx.lineTo(i * CELL_SIZE, canvas.height);
+                ctx.stroke();
+
+                // 横線
+                ctx.beginPath();
+                ctx.moveTo(0, i * CELL_SIZE);
+                ctx.lineTo(canvas.width, i * CELL_SIZE);
+                ctx.stroke();
+            }
+
+            // 石を描画
+            for (let row = 0; row < BOARD_SIZE; row++) {
+                for (let col = 0; col < BOARD_SIZE; col++) {
+                    const x = col * CELL_SIZE + CELL_SIZE / 2;
+                    const y = row * CELL_SIZE + CELL_SIZE / 2;
+
+                    if (gameState.board[row][col] !== 0) {
+                        drawStone(x, y, gameState.board[row][col]);
+                        
+                        // 最後の手をハイライト
+                        if (gameState.lastMove && gameState.lastMove.row === row && gameState.lastMove.col === col) {
+                            ctx.strokeStyle = '#ffeb3b';
+                            ctx.lineWidth = 3;
+                            ctx.beginPath();
+                            ctx.arc(x, y, STONE_RADIUS + 3, 0, Math.PI * 2);
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+
+            // 有効な手をハイライト（プレイヤーのターンのみ）
+            if (gameState.currentPlayer === 1 && !gameState.gameOver) {
+                const validMoves = getValidMoves(1);
+                ctx.fillStyle = 'rgba(255, 255, 0, 0.3)';
+                validMoves.forEach(move => {
+                    const x = move.col * CELL_SIZE;
+                    const y = move.row * CELL_SIZE;
+                    ctx.fillRect(x + 2, y + 2, CELL_SIZE - 4, CELL_SIZE - 4);
+                });
+            }
+        }
+
+        function drawStone(x, y, player) {
+            ctx.save();
+            
+            if (player === 1) {
+                // 黒石（プレイヤー）
+                const gradient = ctx.createRadialGradient(x - 5, y - 5, 0, x, y, STONE_RADIUS);
+                gradient.addColorStop(0, '#666');
+                gradient.addColorStop(1, '#000');
+                ctx.fillStyle = gradient;
+            } else {
+                // 白石（AI）
+                const gradient = ctx.createRadialGradient(x - 5, y - 5, 0, x, y, STONE_RADIUS);
+                gradient.addColorStop(0, '#fff');
+                gradient.addColorStop(1, '#ccc');
+                ctx.fillStyle = gradient;
+            }
+
+            ctx.beginPath();
+            ctx.arc(x, y, STONE_RADIUS, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 石の縁
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            ctx.restore();
+        }
+
+        function checkGameOver() {
+            const playerMoves = hasValidMoves(1);
+            const aiMoves = hasValidMoves(-1);
+
+            if (!playerMoves && !aiMoves) {
+                gameState.gameOver = true;
+                endGame();
+                return true;
+            }
+
+            // 現在のプレイヤーが置けない場合はパス
+            if (!hasValidMoves(gameState.currentPlayer)) {
+                setTimeout(() => {
+                    switchPlayer();
+                    updateUI();
+                    if (gameState.currentPlayer === -1) {
+                        aiMove();
+                    }
+                }, 1000);
+                return false;
+            }
+
+            return false;
+        }
+
+        function endGame() {
+            let playerCount = 0;
+            let aiCount = 0;
+
+            for (let row = 0; row < BOARD_SIZE; row++) {
+                for (let col = 0; col < BOARD_SIZE; col++) {
+                    if (gameState.board[row][col] === 1) playerCount++;
+                    else if (gameState.board[row][col] === -1) aiCount++;
+                }
+            }
+
+            let result;
+            if (playerCount > aiCount) {
+                result = `🏆 プレイヤーの勝利！\n${playerCount} - ${aiCount}`;
+            } else if (aiCount > playerCount) {
+                result = `🤖 コンピュータの勝利！\n${aiCount} - ${playerCount}`;
+            } else {
+                result = `🤝 引き分け！\n${playerCount} - ${aiCount}`;
+            }
+
+            document.getElementById('winnerText').innerHTML = result.replace('\n', '<br>');
+            document.getElementById('gameOver').style.display = 'block';
+        }
+
+        // AI思考（簡単なアルゴリズム）
+        function aiMove() {
+            if (gameState.gameOver || gameState.aiThinking) return;
+            
+            gameState.aiThinking = true;
+            
+            setTimeout(() => {
+                const validMoves = getValidMoves(-1);
+                
+                if (validMoves.length === 0) {
+                    switchPlayer();
+                    updateUI();
+                    gameState.aiThinking = false;
+                    return;
+                }
+
+                // 簡単な評価：最も多くの石を取れる手を選ぶ
+                let bestMove = null;
+                let bestScore = -1;
+
+                validMoves.forEach(move => {
+                    const score = evaluateMove(move.row, move.col, -1);
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestMove = move;
+                    }
+                });
+
+                if (bestMove) {
+                    makeMove(bestMove.row, bestMove.col, -1);
+                    updateUI();
+                    drawBoard();
+                    
+                    if (!checkGameOver()) {
+                        switchPlayer();
+                        updateUI();
+                    }
+                }
+                
+                gameState.aiThinking = false;
+            }, 1000);
+        }
+
+        function evaluateMove(row, col, player) {
+            let score = 0;
+            
+            for (let [dr, dc] of directions) {
+                if (checkDirection(row, col, dr, dc, player)) {
+                    let r = row + dr;
+                    let c = col + dc;
+                    
+                    while (r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE) {
+                        if (gameState.board[r][c] === player) break;
+                        if (gameState.board[r][c] === -player) score++;
+                        r += dr;
+                        c += dc;
+                    }
+                }
+            }
+            
+            // 角の重み付け
+            if ((row === 0 || row === BOARD_SIZE - 1) && (col === 0 || col === BOARD_SIZE - 1)) {
+                score += 10;
+            }
+            
+            return score;
+        }
+
+        // マウスクリック処理
+        canvas.addEventListener('click', (e) => {
+            if (gameState.gameOver || gameState.currentPlayer !== 1 || gameState.aiThinking) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            const col = Math.floor(x / CELL_SIZE);
+            const row = Math.floor(y / CELL_SIZE);
+
+            if (row >= 0 && row < BOARD_SIZE && col >= 0 && col < BOARD_SIZE) {
+                if (makeMove(row, col, 1)) {
+                    updateUI();
+                    drawBoard();
+                    
+                    if (!checkGameOver()) {
+                        switchPlayer();
+                        updateUI();
+                        aiMove();
+                    }
+                }
+            }
+        });
+
+        function restartGame() {
+            document.getElementById('gameOver').style.display = 'none';
+            initializeGame();
+        }
+
+        // ゲーム開始
+        initializeGame();
+    </script>
+</body>
+</html>
