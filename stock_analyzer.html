@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>株価分析アプリ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-section {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            color: white;
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        input, select, button {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        input, select {
+            background: rgba(255, 255, 255, 0.9);
+            color: #2c3e50;
+        }
+
+        button {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        .analysis-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #4facfe;
+        }
+
+        .card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .stat-value {
+            font-weight: bold;
+            color: #4facfe;
+        }
+
+        .positive {
+            color: #27ae60;
+        }
+
+        .negative {
+            color: #e74c3c;
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        #priceChart {
+            width: 100%;
+            height: 100%;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .error {
+            background: #e74c3c;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .input-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📈 株価分析アプリ</h1>
+        
+        <div class="input-section">
+            <div class="input-group">
+                <div>
+                    <label for="stockSymbol">銘柄コード/シンボル</label>
+                    <input type="text" id="stockSymbol" placeholder="例: AAPL, GOOGL, 7203.T" value="7203" oninput="showCompanyName()">
+                    <div id="companyName" style="color: white; font-size: 14px; margin-top: 5px; font-weight: normal;"></div>
+                </div>
+                <div>
+                    <label for="period">期間</label>
+                    <select id="period">
+                        <option value="1d">1日</option>
+                        <option value="5d">5日</option>
+                        <option value="1mo" selected>1ヶ月</option>
+                        <option value="3mo">3ヶ月</option>
+                        <option value="6mo">6ヶ月</option>
+                        <option value="1y">1年</option>
+                        <option value="2y">2年</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="interval">間隔</label>
+                    <select id="interval">
+                        <option value="1m">1分</option>
+                        <option value="5m">5分</option>
+                        <option value="15m">15分</option>
+                        <option value="30m">30分</option>
+                        <option value="1h">1時間</option>
+                        <option value="1d" selected>1日</option>
+                        <option value="1wk">1週間</option>
+                    </select>
+                </div>
+            </div>
+            <button onclick="analyzeStock()">📊 株価を分析</button>
+        </div>
+
+        <div id="loadingDiv" class="loading" style="display: none;">
+            データを読み込み中...
+        </div>
+
+        <div id="errorDiv" class="error" style="display: none;"></div>
+
+        <div id="resultsSection" style="display: none;">
+            <div class="chart-container">
+                <canvas id="priceChart"></canvas>
+            </div>
+
+            <div class="analysis-section">
+                <div class="card">
+                    <h3>💰 価格情報</h3>
+                    <div id="priceInfo"></div>
+                </div>
+
+                <div class="card">
+                    <h3>📊 統計情報</h3>
+                    <div id="statsInfo"></div>
+                </div>
+
+                <div class="card">
+                    <h3>📈 トレンド分析</h3>
+                    <div id="trendInfo"></div>
+                </div>
+
+                <div class="card">
+                    <h3>🎯 テクニカル指標</h3>
+                    <div id="technicalInfo"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        let priceChart = null;
+
+        // 日本の主要銘柄コードと会社名のマッピング
+        const japaneseStocks = {
+            '1301': '極洋',
+            '1332': '日本水産',
+            '1333': 'マルハニチロ',
+            '1605': '国際石油開発帝石',
+            '1721': 'コムシスホールディングス',
+            '1801': '大成建設',
+            '1802': '大林組',
+            '1803': '清水建設',
+            '1812': '鹿島建設',
+            '1925': '大和ハウス工業',
+            '1928': '積水ハウス',
+            '1963': '日揮ホールディングス',
+            '2269': '明治ホールディングス',
+            '2282': 'NHK',
+            '2432': 'ディー・エヌ・エー',
+            '2501': 'サッポロホールディングス',
+            '2502': 'アサヒグループホールディングス',
+            '2503': 'キリンホールディングス',
+            '2801': 'キッコーマン',
+            '2802': '味の素',
+            '2871': 'ニチレイ',
+            '2914': '日本たばこ産業',
+            '3086': 'J.フロント リテイリング',
+            '3099': '三越伊勢丹ホールディングス',
+            '3382': '七十七銀行',
+            '3401': '帝人',
+            '3402': '東レ',
+            '3407': '旭化成',
+            '3436': 'SUMCO',
+            '4004': '昭和電工',
+            '4005': '住友化学',
+            '4021': '日産化学',
+            '4043': 'トクヤマ',
+            '4061': 'デンカ',
+            '4063': '信越化学工業',
+            '4183': '三井化学',
+            '4188': '三菱ケミカルホールディングス',
+            '4208': '宇部興産',
+            '4272': '日本化薬',
+            '4307': '野村総合研究所',
+            '4324': '電通グループ',
+            '4443': 'Sansan',
+            '4452': '花王',
+            '4503': 'アステラス製薬',
+            '4506': '大日本住友製薬',
+            '4507': '塩野義製薬',
+            '4519': '中外製薬',
+            '4523': 'エーザイ',
+            '4568': '第一三共',
+            '4578': '大塚ホールディングス',
+            '4612': '日本ペイントホールディングス',
+            '4613': '関西ペイント',
+            '4631': 'DIC',
+            '4689': 'ヤフー',
+            '4704': 'トレンドマイクロ',
+            '4755': '楽天グループ',
+            '4901': '富士フイルムホールディングス',
+            '4911': '資生堂',
+            '5019': 'キング・ソフィア',
+            '5101': '横浜ゴム',
+            '5108': 'ブリヂストン',
+            '5201': 'AGC',
+            '5214': '日本電気硝子',
+            '5232': '住友大阪セメント',
+            '5301': '東海カーボン',
+            '5332': 'TOTO',
+            '5333': '日本ガイシ',
+            '5401': '日本製鉄',
+            '5406': '神戸製鋼所',
+            '5411': 'JFEホールディングス',
+            '5541': '大平洋金属',
+            '5631': '日本製鋼所',
+            '5632': '三菱製鋼',
+            '5703': '日本軽金属ホールディングス',
+            '5706': '三井金属鉱業',
+            '5707': '東邦亜鉛',
+            '5711': '三菱マテリアル',
+            '5713': '住友金属鉱山',
+            '5714': 'DOWA ホールディングス',
+            '5801': '古河電気工業',
+            '5802': '住友電気工業',
+            '5803': 'フジクラ',
+            '5901': '東洋製罐グループホールディングス',
+            '5947': 'リンナイ',
+            '5949': 'ユニプレス',
+            '6103': 'オークマ',
+            '6113': 'アマダ',
+            '6134': 'FUJI',
+            '6136': 'オーエスジー',
+            '6141': 'DMG森精機',
+            '6146': 'ディスコ',
+            '6178': '日本郵政',
+            '6273': 'SMC',
+            '6301': 'コマツ',
+            '6302': '住友重機械工業',
+            '6305': '日立建機',
+            '6326': 'クボタ',
+            '6361': '荏原製作所',
+            '6366': '千代田化工建設',
+            '6367': 'ダイキン工業',
+            '6370': 'ミヤザキ',
+            '6471': '日本精工',
+            '6472': 'NTN',
+            '6473': 'ジェイテクト',
+            '6479': 'ミネベアミツミ',
+            '6501': '日立製作所',
+            '6502': '東芝',
+            '6503': '三菱電機',
+            '6504': '富士電機',
+            '6506': '安川電機',
+            '6588': '東芝テック',
+            '6592': 'マブチモーター',
+            '6594': '日本電産',
+            '6702': '富士通',
+            '6723': 'ルネサスエレクトロニクス',
+            '6724': 'セイコーエプソン',
+            '6752': 'パナソニック ホールディングス',
+            '6758': 'ソニーグループ',
+            '6762': 'TDK',
+            '6770': 'アルプスアルパイン',
+            '6806': 'ヒロセ電機',
+            '6841': '横河電機',
+            '6856': '堀場製作所',
+            '6857': 'アドバンテスト',
+            '6861': 'キーエンス',
+            '6902': 'デンソー',
+            '6952': 'カシオ計算機',
+            '6954': 'ファナック',
+            '6971': '京セラ',
+            '6976': '太陽誘電',
+            '6981': '村田製作所',
+            '7003': '三井E&Sホールディングス',
+            '7011': '三菱重工業',
+            '7012': 'カワサキモータース',
+            '7013': 'IHI',
+            '7201': '日産自動車',
+            '7202': 'いすゞ自動車',
+            '7203': 'トヨタ自動車',
+            '7205': '日野自動車',
+            '7211': '三菱自動車工業',
+            '7261': 'マツダ',
+            '7267': 'ホンダ',
+            '7269': 'スズキ',
+            '7270': 'SUBARU',
+            '7731': 'ニコン',
+            '7732': 'トプコン',
+            '7733': 'オリンパス',
+            '7741': 'HOYA',
+            '7751': 'キヤノン',
+            '7832': 'バンダイナムコホールディングス',
+            '7911': '凸版印刷',
+            '7912': '大日本印刷',
+            '8001': '伊藤忠商事',
+            '8002': '丸紅',
+            '8015': '豊田通商',
+            '8031': '三井物産',
+            '8053': '住友商事',
+            '8058': '三菱商事',
+            '8233': '高島屋',
+            '8267': 'イオン',
+            '8270': 'ユニー・ファミリーマートホールディングス',
+            '8306': '三菱UFJフィナンシャル・グループ',
+            '8308': 'りそなホールディングス',
+            '8316': '三井住友フィナンシャルグループ',
+            '8411': 'みずほフィナンシャルグループ',
+            '8570': 'イオンフィナンシャルサービス',
+            '8604': '野村ホールディングス',
+            '8628': '松井証券',
+            '8750': '第一生命ホールディングス',
+            '8766': '東京海上ホールディングス',
+            '8795': 'T&Dホールディングス',
+            '9022': '東海旅客鉄道',
+            '9062': '日本通運',
+            '9107': '川崎汽船',
+            '9202': 'ANA ホールディングス',
+            '9301': '三菱倉庫',
+            '9412': 'スカパーJSATホールディングス',
+            '9432': 'NTT',
+            '9433': 'KDDI',
+            '9434': 'ソフトバンク',
+            '9437': 'NTTドコモ',
+            '9501': '東京電力ホールディングス',
+            '9502': '中部電力',
+            '9503': '関西電力',
+            '9531': '東京ガス',
+            '9532': '大阪ガス',
+            '9602': '東宝',
+            '9613': 'NTTデータ',
+            '9684': 'スクウェア・エニックス・ホールディングス',
+            '9766': 'コナミグループ',
+            '9983': 'ファーストリテイリング',
+            '9984': 'ソフトバンクグループ'
+        };
+
+        // アメリカの主要銘柄
+        const americanStocks = {
+            'AAPL': 'Apple Inc.',
+            'MSFT': 'Microsoft Corporation',
+            'GOOGL': 'Alphabet Inc.',
+            'GOOG': 'Alphabet Inc.',
+            'AMZN': 'Amazon.com Inc.',
+            'TSLA': 'Tesla Inc.',
+            'META': 'Meta Platforms Inc.',
+            'NVDA': 'NVIDIA Corporation',
+            'BRK.A': 'Berkshire Hathaway Inc.',
+            'BRK.B': 'Berkshire Hathaway Inc.',
+            'V': 'Visa Inc.',
+            'JNJ': 'Johnson & Johnson',
+            'WMT': 'Walmart Inc.',
+            'JPM': 'JPMorgan Chase & Co.',
+            'MA': 'Mastercard Incorporated',
+            'PG': 'Procter & Gamble Company',
+            'UNH': 'UnitedHealth Group Incorporated',
+            'HD': 'Home Depot Inc.',
+            'PYPL': 'PayPal Holdings Inc.',
+            'BAC': 'Bank of America Corporation',
+            'DIS': 'Walt Disney Company',
+            'ADBE': 'Adobe Inc.',
+            'CMCSA': 'Comcast Corporation',
+            'NFLX': 'Netflix Inc.',
+            'KO': 'Coca-Cola Company',
+            'NKE': 'Nike Inc.',
+            'XOM': 'Exxon Mobil Corporation',
+            'VZ': 'Verizon Communications Inc.',
+            'INTC': 'Intel Corporation',
+            'PFE': 'Pfizer Inc.',
+            'T': 'AT&T Inc.',
+            'MRK': 'Merck & Co. Inc.',
+            'CRM': 'Salesforce Inc.',
+            'ABT': 'Abbott Laboratories',
+            'ACN': 'Accenture plc',
+            'COST': 'Costco Wholesale Corporation',
+            'TMO': 'Thermo Fisher Scientific Inc.',
+            'AVGO': 'Broadcom Inc.',
+            'DHR': 'Danaher Corporation',
+            'TXN': 'Texas Instruments Incorporated',
+            'NEE': 'NextEra Energy Inc.',
+            'LLY': 'Eli Lilly and Company',
+            'WFC': 'Wells Fargo & Company',
+            'ORCL': 'Oracle Corporation',
+            'CVX': 'Chevron Corporation',
+            'QCOM': 'QUALCOMM Incorporated',
+            'MDT': 'Medtronic plc',
+            'UPS': 'United Parcel Service Inc.',
+            'IBM': 'International Business Machines Corporation',
+            'C': 'Citigroup Inc.',
+            'LIN': 'Linde plc',
+            'LOW': 'Lowe\'s Companies Inc.',
+            'HON': 'Honeywell International Inc.',
+            'AMAT': 'Applied Materials Inc.',
+            'PM': 'Philip Morris International Inc.',
+            'SBUX': 'Starbucks Corporation',
+            'CAT': 'Caterpillar Inc.',
+            'GS': 'Goldman Sachs Group Inc.',
+            'DE': 'Deere & Company',
+            'AMD': 'Advanced Micro Devices Inc.',
+            'ISRG': 'Intuitive Surgical Inc.',
+            'SPGI': 'S&P Global Inc.',
+            'BKNG': 'Booking Holdings Inc.',
+            'INTU': 'Intuit Inc.',
+            'NOW': 'ServiceNow Inc.',
+            'GILD': 'Gilead Sciences Inc.',
+            'AMGN': 'Amgen Inc.',
+            'SYK': 'Stryker Corporation',
+            'TGT': 'Target Corporation',
+            'AXP': 'American Express Company',
+            'MO': 'Altria Group Inc.',
+            'VRTX': 'Vertex Pharmaceuticals Incorporated',
+            'CVS': 'CVS Health Corporation',
+            'LRCX': 'Lam Research Corporation',
+            'ZTS': 'Zoetis Inc.',
+            'REGN': 'Regeneron Pharmaceuticals Inc.',
+            'BLK': 'BlackRock Inc.',
+            'MMM': '3M Company',
+            'ADI': 'Analog Devices Inc.',
+            'BA': 'Boeing Company',
+            'MDLZ': 'Mondelez International Inc.',
+            'CI': 'Cigna Corporation',
+            'CHTR': 'Charter Communications Inc.',
+            'MU': 'Micron Technology Inc.',
+            'CB': 'Chubb Limited',
+            'SO': 'Southern Company',
+            'DUK': 'Duke Energy Corporation',
+            'ZM': 'Zoom Video Communications Inc.',
+            'PLD': 'Prologis Inc.',
+            'CCI': 'Crown Castle International Corp.',
+            'CL': 'Colgate-Palmolive Company',
+            'EL': 'Estee Lauder Companies Inc.',
+            'USB': 'U.S. Bancorp',
+            'FISV': 'Fiserv Inc.',
+            'BSX': 'Boston Scientific Corporation',
+            'ICE': 'Intercontinental Exchange Inc.',
+            'EOG': 'EOG Resources Inc.',
+            'NSC': 'Norfolk Southern Corporation',
+            'SHW': 'Sherwin-Williams Company',
+            'FCX': 'Freeport-McMoRan Inc.',
+            'D': 'Dominion Energy Inc.',
+            'CME': 'CME Group Inc.',
+            'PNC': 'PNC Financial Services Group Inc.',
+            'APD': 'Air Products and Chemicals Inc.',
+            'EMR': 'Emerson Electric Co.',
+            'AON': 'Aon plc',
+            'GE': 'General Electric Company',
+            'COP': 'ConocoPhillips',
+            'FDX': 'FedEx Corporation',
+            'EQIX': 'Equinix Inc.',
+            'CSX': 'CSX Corporation',
+            'ITW': 'Illinois Tool Works Inc.',
+            'MCO': 'Moody\'s Corporation',
+            'APH': 'Amphenol Corporation',
+            'WM': 'Waste Management Inc.',
+            'ECL': 'Ecolab Inc.',
+            'NOC': 'Northrop Grumman Corporation',
+            'MAR': 'Marriott International Inc.',
+            'ADP': 'Automatic Data Processing Inc.',
+            'PSA': 'Public Storage',
+            'DG': 'Dollar General Corporation',
+            'ROP': 'Roper Technologies Inc.',
+            'ROST': 'Ross Stores Inc.',
+            'TJX': 'TJX Companies Inc.',
+            'GM': 'General Motors Company',
+            'GD': 'General Dynamics Corporation',
+            'HUM': 'Humana Inc.',
+            'BDX': 'Becton Dickinson and Company',
+            'TFC': 'Truist Financial Corporation',
+            'EW': 'Edwards Lifesciences Corporation',
+            'SRE': 'Sempra Energy',
+            'CMG': 'Chipotle Mexican Grill Inc.',
+            'ORLY': 'O\'Reilly Automotive Inc.',
+            'KMI': 'Kinder Morgan Inc.',
+            'STZ': 'Constellation Brands Inc.',
+            'MMC': 'Marsh & McLennan Companies Inc.',
+            'ADM': 'Archer-Daniels-Midland Company',
+            'OKE': 'ONEOK Inc.',
+            'BK': 'Bank of New York Mellon Corporation',
+            'AFL': 'AFLAC Incorporated',
+            'PPG': 'PPG Industries Inc.',
+            'KLAC': 'KLA Corporation',
+            'A': 'Agilent Technologies Inc.',
+            'TEL': 'TE Connectivity Ltd.',
+            'GPN': 'Global Payments Inc.',
+            'INFO': 'IHS Markit Ltd.',
+            'AIG': 'American International Group Inc.',
+            'MCK': 'McKesson Corporation',
+            'COF': 'Capital One Financial Corporation',
+            'SCHW': 'Charles Schwab Corporation',
+            'YUM': 'Yum! Brands Inc.',
+            'ALL': 'Allstate Corporation',
+            'HCA': 'HCA Healthcare Inc.',
+            'MSI': 'Motorola Solutions Inc.',
+            'F': 'Ford Motor Company',
+            'CARR': 'Carrier Global Corporation',
+            'AEP': 'American Electric Power Company Inc.',
+            'PSX': 'Phillips 66',
+            'WMB': 'Williams Companies Inc.',
+            'TRV': 'Travelers Companies Inc.',
+            'DD': 'DuPont de Nemours Inc.',
+            'O': 'Realty Income Corporation',
+            'FAST': 'Fastenal Company',
+            'PAYX': 'Paychex Inc.',
+            'CTVA': 'Corteva Inc.',
+            'PRU': 'Prudential Financial Inc.',
+            'CMI': 'Cummins Inc.',
+            'JCI': 'Johnson Controls International plc',
+            'OTIS': 'Otis Worldwide Corporation',
+            'EA': 'Electronic Arts Inc.',
+            'KR': 'Kroger Company',
+            'STT': 'State Street Corporation',
+            'ROK': 'Rockwell Automation Inc.',
+            'CTAS': 'Cintas Corporation',
+            'MCHP': 'Microchip Technology Incorporated',
+            'EXC': 'Exelon Corporation',
+            'GLW': 'Corning Incorporated',
+            'VRSK': 'Verisk Analytics Inc.',
+            'PCAR': 'PACCAR Inc.',
+            'WBA': 'Walgreens Boots Alliance Inc.',
+            'AZO': 'AutoZone Inc.',
+            'WELL': 'Welltower Inc.',
+            'ED': 'Consolidated Edison Inc.',
+            'CPRT': 'Copart Inc.',
+            'MSCI': 'MSCI Inc.',
+            'GWW': 'W.W. Grainger Inc.',
+            'EFX': 'Equifax Inc.',
+            'DLR': 'Digital Realty Trust Inc.',
+            'AMT': 'American Tower Corporation',
+            'XLNX': 'Xilinx Inc.',
+            'SPG': 'Simon Property Group Inc.',
+            'PEG': 'Public Service Enterprise Group Inc.',
+            'ES': 'Eversource Energy',
+            'HSY': 'Hershey Company',
+            'IDXX': 'IDEXX Laboratories Inc.',
+            'RSG': 'Republic Services Inc.',
+            'VMC': 'Vulcan Materials Company',
+            'AVB': 'AvalonBay Communities Inc.',
+            'ALGN': 'Align Technology Inc.',
+            'MLM': 'Martin Marietta Materials Inc.',
+            'ETR': 'Entergy Corporation',
+            'EIX': 'Edison International',
+            'FE': 'FirstEnergy Corp.',
+            'MNST': 'Monster Beverage Corporation',
+            'HPQ': 'HP Inc.',
+            'FRC': 'First Republic Bank',
+            'ARE': 'Alexandria Real Estate Equities Inc.',
+            'PPL': 'PPL Corporation',
+            'EQR': 'Equity Residential',
+            'AWK': 'American Water Works Company Inc.',
+            'SYY': 'Sysco Corporation',
+            'LHX': 'L3Harris Technologies Inc.',
+            'DOW': 'Dow Inc.',
+            'WEC': 'WEC Energy Group Inc.',
+            'HLT': 'Hilton Worldwide Holdings Inc.',
+            'XEL': 'Xcel Energy Inc.',
+            'TROW': 'T. Rowe Price Group Inc.',
+            'RMD': 'ResMed Inc.',
+            'ANSS': 'ANSYS Inc.',
+            'FTV': 'Fortive Corporation',
+            'LYB': 'LyondellBasell Industries N.V.',
+            'SLB': 'Schlumberger Limited',
+            'DHI': 'D.R. Horton Inc.',
+            'CTSH': 'Cognizant Technology Solutions Corporation',
+            'TDG': 'TransDigm Group Incorporated',
+            'CERN': 'Cerner Corporation',
+            'ETN': 'Eaton Corporation plc',
+            'FIS': 'Fidelity National Information Services Inc.',
+            'BAX': 'Baxter International Inc.',
+            'WY': 'Weyerhaeuser Company',
+            'K': 'Kellogg Company',
+            'ZBRA': 'Zebra Technologies Corporation',
+            'DTE': 'DTE Energy Company',
+            'LEN': 'Lennar Corporation',
+            'PH': 'Parker-Hannifin Corporation',
+            'CDNS': 'Cadence Design Systems Inc.',
+            'PKI': 'PerkinElmer Inc.',
+            'AME': 'AMETEK Inc.',
+            'GIS': 'General Mills Inc.',
+            'SWKS': 'Skyworks Solutions Inc.',
+            'RJF': 'Raymond James Financial Inc.',
+            'CLX': 'Clorox Company',
+            'WST': 'West Pharmaceutical Services Inc.',
+            'HPE': 'Hewlett Packard Enterprise Company',
+            'AVY': 'Avery Dennison Corporation',
+            'MTB': 'M&T Bank Corporation',
+            'STE': 'STERIS plc',
+            'PWR': 'Quanta Services Inc.',
+            'KEYS': 'Keysight Technologies Inc.',
+            'CNP': 'CenterPoint Energy Inc.',
+            'ROL': 'Rollins Inc.',
+            'NTRS': 'Northern Trust Corporation',
+            'BRO': 'Brown & Brown Inc.',
+            'RF': 'Regions Financial Corporation',
+            'DRI': 'Darden Restaurants Inc.',
+            'EXPD': 'Expeditors International of Washington Inc.',
+            'ATO': 'Atmos Energy Corporation',
+            'FITB': 'Fifth Third Bancorp',
+            'AES': 'AES Corporation',
+            'WAT': 'Waters Corporation',
+            'VIAC': 'ViacomCBS Inc.',
+            'CFG': 'Citizens Financial Group Inc.',
+            'CHD': 'Church & Dwight Co. Inc.',
+            'CAH': 'Cardinal Health Inc.',
+            'HBAN': 'Huntington Bancshares Incorporated',
+            'STX': 'Seagate Technology Holdings plc',
+            'WAB': 'Westinghouse Air Brake Technologies Corporation',
+            'WDC': 'Western Digital Corporation',
+            'TSN': 'Tyson Foods Inc.',
+            'LH': 'Laboratory Corporation of America Holdings',
+            'MAA': 'Mid-America Apartment Communities Inc.',
+            'ESS': 'Essex Property Trust Inc.',
+            'UDR': 'UDR Inc.',
+            'TYL': 'Tyler Technologies Inc.',
+            'LUV': 'Southwest Airlines Co.'
+        };
+
+        function getCompanyName(symbol) {
+            const cleanSymbol = symbol.replace('.T', '');
+            
+            // 日本の銘柄をチェック
+            if (japaneseStocks[cleanSymbol]) {
+                return japaneseStocks[cleanSymbol];
+            }
+            
+            // アメリカの銘柄をチェック
+            if (americanStocks[symbol]) {
+                return americanStocks[symbol];
+            }
+            
+            return null;
+        }
+
+        function showCompanyName() {
+            const symbol = document.getElementById('stockSymbol').value.trim().toUpperCase();
+            const companyNameDiv = document.getElementById('companyName');
+            
+            if (symbol) {
+                const companyName = getCompanyName(symbol);
+                if (companyName) {
+                    companyNameDiv.textContent = `📊 ${companyName}`;
+                    companyNameDiv.style.display = 'block';
+                } else {
+                    companyNameDiv.textContent = '';
+                    companyNameDiv.style.display = 'none';
+                }
+            } else {
+                companyNameDiv.textContent = '';
+                companyNameDiv.style.display = 'none';
+            }
+        }
+
+        async function analyzeStock() {
+            const symbol = document.getElementById('stockSymbol').value.trim().toUpperCase();
+            const period = document.getElementById('period').value;
+            const interval = document.getElementById('interval').value;
+
+            if (!symbol) {
+                showError('銘柄コードを入力してください');
+                return;
+            }
+
+            showLoading(true);
+            hideError();
+            hideResults();
+
+            try {
+                const data = await fetchStockData(symbol, period, interval);
+                if (data && data.chart && data.chart.result && data.chart.result.length > 0) {
+                    displayResults(data.chart.result[0], symbol);
+                } else {
+                    showError('株価データが見つかりませんでした。銘柄コードを確認してください。');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('データの取得に失敗しました: ' + error.message);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function fetchStockData(symbol, period, interval) {
+            // Yahoo Finance APIの代替として、模擬データを生成
+            // 実際の本格的なアプリケーションでは、適切なAPIキーを使用してください
+            return generateMockData(symbol, period, interval);
+        }
+
+        function generateMockData(symbol, period, interval) {
+            const days = getPeriodDays(period);
+            const timestamps = [];
+            const prices = [];
+            const volumes = [];
+            
+            const basePrice = Math.random() * 200 + 50; // 50-250の範囲の基準価格
+            let currentPrice = basePrice;
+            
+            const now = new Date();
+            
+            for (let i = days - 1; i >= 0; i--) {
+                const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
+                timestamps.push(Math.floor(date.getTime() / 1000));
+                
+                // 価格の変動を模擬
+                const change = (Math.random() - 0.5) * currentPrice * 0.05; // ±5%の変動
+                currentPrice = Math.max(currentPrice + change, 1);
+                
+                prices.push({
+                    open: currentPrice * (0.98 + Math.random() * 0.04),
+                    high: currentPrice * (1.01 + Math.random() * 0.04),
+                    low: currentPrice * (0.96 + Math.random() * 0.04),
+                    close: currentPrice,
+                    adjClose: currentPrice
+                });
+                
+                volumes.push(Math.floor(Math.random() * 10000000 + 1000000));
+            }
+
+            return {
+                chart: {
+                    result: [{
+                        meta: {
+                            symbol: symbol,
+                            regularMarketPrice: currentPrice,
+                            chartPreviousClose: prices[0].close,
+                            currency: 'USD'
+                        },
+                        timestamp: timestamps,
+                        indicators: {
+                            quote: [{
+                                open: prices.map(p => p.open),
+                                high: prices.map(p => p.high),
+                                low: prices.map(p => p.low),
+                                close: prices.map(p => p.close),
+                                volume: volumes
+                            }],
+                            adjclose: [{
+                                adjclose: prices.map(p => p.adjClose)
+                            }]
+                        }
+                    }]
+                }
+            };
+        }
+
+        function getPeriodDays(period) {
+            const periodMap = {
+                '1d': 1,
+                '5d': 5,
+                '1mo': 30,
+                '3mo': 90,
+                '6mo': 180,
+                '1y': 365,
+                '2y': 730
+            };
+            return periodMap[period] || 30;
+        }
+
+        function displayResults(data, symbol) {
+            const meta = data.meta;
+            const quotes = data.indicators.quote[0];
+            const timestamps = data.timestamp;
+
+            // 価格チャートを表示
+            displayPriceChart(timestamps, quotes.close, symbol);
+
+            // 価格情報を表示
+            displayPriceInfo(meta, quotes);
+
+            // 統計情報を表示
+            displayStatsInfo(quotes);
+
+            // トレンド分析を表示
+            displayTrendInfo(quotes);
+
+            // テクニカル指標を表示
+            displayTechnicalInfo(quotes);
+
+            document.getElementById('resultsSection').style.display = 'block';
+        }
+
+        function displayPriceChart(timestamps, prices, symbol) {
+            const ctx = document.getElementById('priceChart').getContext('2d');
+            
+            if (priceChart) {
+                priceChart.destroy();
+            }
+
+            const labels = timestamps.map(ts => new Date(ts * 1000).toLocaleDateString('ja-JP'));
+            const companyName = getCompanyName(symbol);
+            const chartTitle = companyName ? `${symbol} (${companyName}) 株価チャート` : `${symbol} 株価チャート`;
+            
+            priceChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: `${symbol} 株価`,
+                        data: prices,
+                        borderColor: '#4facfe',
+                        backgroundColor: 'rgba(79, 172, 254, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: chartTitle
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            title: {
+                                display: true,
+                                text: '価格 (USD)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: '日付'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function displayPriceInfo(meta, quotes) {
+            const currentPrice = meta.regularMarketPrice;
+            const previousClose = meta.chartPreviousClose;
+            const change = currentPrice - previousClose;
+            const changePercent = (change / previousClose) * 100;
+
+            const html = `
+                <div class="stat-item">
+                    <span>現在価格:</span>
+                    <span class="stat-value">$${currentPrice.toFixed(2)}</span>
+                </div>
+                <div class="stat-item">
+                    <span>前日終値:</span>
+                    <span class="stat-value">$${previousClose.toFixed(2)}</span>
+                </div>
+                <div class="stat-item">
+                    <span>変動額:</span>
+                    <span class="stat-value ${change >= 0 ? 'positive' : 'negative'}">
+                        ${change >= 0 ? '+' : ''}$${change.toFixed(2)}
+                    </span>
+                </div>
+                <div class="stat-item">
+                    <span>変動率:</span>
+                    <span class="stat-value ${changePercent >= 0 ? 'positive' : 'negative'}">
+                        ${changePercent >= 0 ? '+' : ''}${changePercent.toFixed(2)}%
+                    </span>
+                </div>
+            `;
+            
+            document.getElementById('priceInfo').innerHTML = html;
+        }
+
+        function displayStatsInfo(quotes) {
+            const prices = quotes.close.filter(p => p !== null);
+            const volumes = quotes.volume.filter(v => v !== null);
+            
+            const highest = Math.max(...prices);
+            const lowest = Math.min(...prices);
+            const avgPrice = prices.reduce((a, b) => a + b, 0) / prices.length;
+            const avgVolume = volumes.reduce((a, b) => a + b, 0) / volumes.length;
+
+            const html = `
+                <div class="stat-item">
+                    <span>期間最高値:</span>
+                    <span class="stat-value positive">$${highest.toFixed(2)}</span>
+                </div>
+                <div class="stat-item">
+                    <span>期間最安値:</span>
+                    <span class="stat-value negative">$${lowest.toFixed(2)}</span>
+                </div>
+                <div class="stat-item">
+                    <span>平均価格:</span>
+                    <span class="stat-value">$${avgPrice.toFixed(2)}</span>
+                </div>
+                <div class="stat-item">
+                    <span>平均出来高:</span>
+                    <span class="stat-value">${formatNumber(avgVolume)}</span>
+                </div>
+            `;
+            
+            document.getElementById('statsInfo').innerHTML = html;
+        }
+
+        function displayTrendInfo(quotes) {
+            const prices = quotes.close.filter(p => p !== null);
+            const recentPrices = prices.slice(-10);
+            const olderPrices = prices.slice(-20, -10);
+            
+            const recentAvg = recentPrices.reduce((a, b) => a + b, 0) / recentPrices.length;
+            const olderAvg = olderPrices.reduce((a, b) => a + b, 0) / olderPrices.length;
+            
+            const trendDirection = recentAvg > olderAvg ? '上昇' : '下降';
+            const trendClass = recentAvg > olderAvg ? 'positive' : 'negative';
+            
+            const volatility = calculateVolatility(prices);
+            const momentum = calculateMomentum(prices);
+
+            const html = `
+                <div class="stat-item">
+                    <span>トレンド:</span>
+                    <span class="stat-value ${trendClass}">${trendDirection}トレンド</span>
+                </div>
+                <div class="stat-item">
+                    <span>ボラティリティ:</span>
+                    <span class="stat-value">${volatility.toFixed(2)}%</span>
+                </div>
+                <div class="stat-item">
+                    <span>モメンタム:</span>
+                    <span class="stat-value ${momentum >= 0 ? 'positive' : 'negative'}">
+                        ${momentum >= 0 ? '+' : ''}${momentum.toFixed(2)}%
+                    </span>
+                </div>
+            `;
+            
+            document.getElementById('trendInfo').innerHTML = html;
+        }
+
+        function displayTechnicalInfo(quotes) {
+            const prices = quotes.close.filter(p => p !== null);
+            
+            const sma20 = calculateSMA(prices, 20);
+            const sma50 = calculateSMA(prices, 50);
+            const rsi = calculateRSI(prices);
+            const currentPrice = prices[prices.length - 1];
+
+            let signal = '中立';
+            let signalClass = '';
+            
+            if (currentPrice > sma20 && sma20 > sma50 && rsi < 70) {
+                signal = '買いシグナル';
+                signalClass = 'positive';
+            } else if (currentPrice < sma20 && sma20 < sma50 && rsi > 30) {
+                signal = '売りシグナル';
+                signalClass = 'negative';
+            }
+
+            const html = `
+                <div class="stat-item">
+                    <span>20日移動平均:</span>
+                    <span class="stat-value">$${sma20.toFixed(2)}</span>
+                </div>
+                <div class="stat-item">
+                    <span>50日移動平均:</span>
+                    <span class="stat-value">$${sma50.toFixed(2)}</span>
+                </div>
+                <div class="stat-item">
+                    <span>RSI (14日):</span>
+                    <span class="stat-value">${rsi.toFixed(2)}</span>
+                </div>
+                <div class="stat-item">
+                    <span>推奨:</span>
+                    <span class="stat-value ${signalClass}">${signal}</span>
+                </div>
+            `;
+            
+            document.getElementById('technicalInfo').innerHTML = html;
+        }
+
+        function calculateSMA(prices, period) {
+            if (prices.length < period) return prices[prices.length - 1];
+            const recentPrices = prices.slice(-period);
+            return recentPrices.reduce((a, b) => a + b, 0) / period;
+        }
+
+        function calculateRSI(prices, period = 14) {
+            if (prices.length < period + 1) return 50;
+            
+            let gains = 0;
+            let losses = 0;
+            
+            for (let i = prices.length - period; i < prices.length; i++) {
+                const change = prices[i] - prices[i - 1];
+                if (change > 0) {
+                    gains += change;
+                } else {
+                    losses -= change;
+                }
+            }
+            
+            const avgGain = gains / period;
+            const avgLoss = losses / period;
+            
+            if (avgLoss === 0) return 100;
+            
+            const rs = avgGain / avgLoss;
+            return 100 - (100 / (1 + rs));
+        }
+
+        function calculateVolatility(prices) {
+            if (prices.length < 2) return 0;
+            
+            const returns = [];
+            for (let i = 1; i < prices.length; i++) {
+                returns.push((prices[i] - prices[i - 1]) / prices[i - 1]);
+            }
+            
+            const avgReturn = returns.reduce((a, b) => a + b, 0) / returns.length;
+            const variance = returns.reduce((acc, ret) => acc + Math.pow(ret - avgReturn, 2), 0) / returns.length;
+            
+            return Math.sqrt(variance) * Math.sqrt(252) * 100; // 年率換算
+        }
+
+        function calculateMomentum(prices) {
+            if (prices.length < 10) return 0;
+            const current = prices[prices.length - 1];
+            const past = prices[prices.length - 10];
+            return ((current - past) / past) * 100;
+        }
+
+        function formatNumber(num) {
+            if (num >= 1000000000) {
+                return (num / 1000000000).toFixed(1) + 'B';
+            } else if (num >= 1000000) {
+                return (num / 1000000).toFixed(1) + 'M';
+            } else if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'K';
+            }
+            return num.toFixed(0);
+        }
+
+        function showLoading(show) {
+            document.getElementById('loadingDiv').style.display = show ? 'block' : 'none';
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorDiv');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function hideError() {
+            document.getElementById('errorDiv').style.display = 'none';
+        }
+
+        function hideResults() {
+            document.getElementById('resultsSection').style.display = 'none';
+        }
+
+        // 初期ロード時にサンプルデータを表示
+        window.addEventListener('load', function() {
+            showCompanyName(); // 初期値の会社名を表示
+            analyzeStock();
+        });
+    </script>
+</body>
+</html>

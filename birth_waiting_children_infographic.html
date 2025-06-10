@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日本の出生数と保育所待機児童数の関係性 - 包括的分析インフォグラフィック</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic Pro', 'Yu Gothic', 'Meiryo', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header .subtitle {
+            font-size: 1.2rem;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+
+        .period {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 10px 30px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .executive-summary {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .executive-summary h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .key-findings {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .finding {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #3498db;
+        }
+
+        .main-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+        }
+
+        .stat-card.birth::before {
+            background: linear-gradient(45deg, #ff6b6b, #ff8a5c);
+        }
+
+        .stat-card.waiting::before {
+            background: linear-gradient(45deg, #4ecdc4, #44bd32);
+        }
+
+        .stat-card h2 {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .big-number {
+            font-size: 3rem;
+            font-weight: 900;
+            margin: 10px 0;
+        }
+
+        .birth .big-number {
+            color: #e74c3c;
+        }
+
+        .waiting .big-number {
+            color: #27ae60;
+        }
+
+        .change {
+            font-size: 1.1rem;
+            font-weight: bold;
+            padding: 5px 15px;
+            border-radius: 15px;
+            margin-top: 10px;
+            display: inline-block;
+        }
+
+        .decrease {
+            background: #e8f5e8;
+            color: #27ae60;
+        }
+
+        .regional-analysis {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .regional-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .regional-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+        }
+
+        .regional-section h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .prefecture-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .prefecture-list li {
+            background: white;
+            margin: 8px 0;
+            padding: 10px 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .prefecture-name {
+            font-weight: bold;
+        }
+
+        .prefecture-value {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .high-rate {
+            border-left: 4px solid #e74c3c;
+        }
+
+        .low-rate {
+            border-left: 4px solid #27ae60;
+        }
+
+        .policy-timeline {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .policy-timeline h2 {
+            text-align: center;
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 40px;
+        }
+
+        .timeline-container {
+            position: relative;
+            margin: 40px 0;
+            padding: 20px 0;
+        }
+
+        .timeline-line {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: calc(100% - 40px);
+            background: linear-gradient(to bottom, #ff6b6b, #e74c3c, #3498db, #4ecdc4);
+            border-radius: 2px;
+            top: 20px;
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 60px;
+            position: relative;
+            min-height: 120px;
+        }
+
+        .timeline-item:nth-child(odd) {
+            flex-direction: row;
+            justify-content: flex-start;
+        }
+
+        .timeline-item:nth-child(even) {
+            flex-direction: row-reverse;
+            justify-content: flex-start;
+        }
+
+        .timeline-content {
+            width: 45%;
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border: 2px solid #e9ecef;
+        }
+
+        .timeline-item:nth-child(odd) .timeline-content {
+            margin-right: 5%;
+        }
+
+        .timeline-item:nth-child(even) .timeline-content {
+            margin-left: 5%;
+        }
+
+        .timeline-content::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 0;
+            height: 0;
+            border-style: solid;
+        }
+
+        .timeline-item:nth-child(odd) .timeline-content::before {
+            right: -12px;
+            border-width: 12px 0 12px 12px;
+            border-color: transparent transparent transparent #f8f9fa;
+            transform: translateY(-50%);
+        }
+
+        .timeline-item:nth-child(even) .timeline-content::before {
+            left: -12px;
+            border-width: 12px 12px 12px 0;
+            border-color: transparent #f8f9fa transparent transparent;
+            transform: translateY(-50%);
+        }
+
+        .timeline-dot {
+            width: 40px;
+            height: 40px;
+            background: #fff;
+            border: 4px solid #e74c3c;
+            border-radius: 50%;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #e74c3c;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .timeline-dot.start {
+            border-color: #ff6b6b;
+            color: #ff6b6b;
+        }
+
+        .timeline-dot.peak {
+            border-color: #e74c3c;
+            color: #e74c3c;
+        }
+
+        .timeline-dot.transition {
+            border-color: #3498db;
+            color: #3498db;
+        }
+
+        .timeline-dot.solution {
+            border-color: #4ecdc4;
+            color: #4ecdc4;
+        }
+
+        .timeline-year {
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .timeline-year .year-icon {
+            font-size: 1.2rem;
+        }
+
+        .timeline-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #34495e;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .policy-details {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .policy-details strong {
+            color: #2c3e50;
+        }
+
+        .timeline-stats {
+            display: flex;
+            gap: 15px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .stat-badge {
+            background: #3498db;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .stat-badge.success {
+            background: #27ae60;
+        }
+
+        .stat-badge.warning {
+            background: #f39c12;
+        }
+
+        .stat-badge.danger {
+            background: #e74c3c;
+        }
+
+        .international-comparison {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .country-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .country-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .country-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .fertility-rate {
+            font-size: 2rem;
+            font-weight: 900;
+            margin: 10px 0;
+        }
+
+        .country-status {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .economic-factors {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .factor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .factor-card {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 5px solid #3498db;
+        }
+
+        .factor-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .factor-stats {
+            list-style: none;
+            padding: 0;
+        }
+
+        .factor-stats li {
+            background: white;
+            margin: 8px 0;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .charts-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .chart-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-title {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .bar-chart {
+            display: flex;
+            align-items: end;
+            height: 200px;
+            gap: 8px;
+            margin: 20px 0;
+        }
+
+        .bar {
+            flex: 1;
+            background: linear-gradient(to top, #ff6b6b, #ff8a5c);
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            min-height: 10px;
+            display: flex;
+            align-items: end;
+            justify-content: center;
+            color: white;
+            font-size: 0.7rem;
+            font-weight: bold;
+            padding-bottom: 5px;
+        }
+
+        .bar.waiting-bar {
+            background: linear-gradient(to top, #4ecdc4, #44bd32);
+        }
+
+        .bar-label {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .policy-recommendations {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .recommendations-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .recommendation-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+        }
+
+        .recommendation-section h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .recommendation-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .recommendation-list li {
+            background: white;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+
+        .recommendation-list li strong {
+            color: #2c3e50;
+        }
+
+        .key-insights {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .insight-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .insight-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .footer {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .data-source {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 15px;
+            text-align: left;
+        }
+
+        @media (max-width: 768px) {
+            .main-stats,
+            .charts-section,
+            .regional-grid,
+            .recommendations-grid,
+            .country-grid,
+            .factor-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .timeline-item {
+                flex-direction: column !important;
+                margin-bottom: 40px;
+            }
+
+            .timeline-content {
+                width: 90% !important;
+                margin: 20px auto !important;
+            }
+
+            .timeline-content::before {
+                display: none;
+            }
+
+            .timeline-line {
+                left: 30px;
+                transform: none;
+            }
+
+            .timeline-dot {
+                left: 30px;
+                transform: translateX(-50%);
+            }
+
+            .timeline-stats {
+                justify-content: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ヘッダー -->
+        <div class="header">
+            <h1>日本の出生数と保育所待機児童数の関係性</h1>
+            <p class="subtitle">包括的分析と国際比較 - 逆相関の20年間</p>
+            <div class="period">2004年 - 2024年</div>
+        </div>
+
+        <!-- エグゼクティブサマリー -->
+        <div class="executive-summary">
+            <h2>📊 エグゼクティブサマリー</h2>
+            <p>過去20年間における日本の出生数と保育所入園待機児童数の推移および両者の関係性について包括的に分析。厚生労働省、こども家庭庁、内閣府等の公式統計データに基づく。</p>
+            <div class="key-findings">
+                <div class="finding">
+                    <strong>出生数と待機児童数の逆相関関係</strong><br>
+                    2004-2017年は出生数減少にもかかわらず待機児童問題が深刻化、2018年以降は急激な少子化により待機児童問題が劇的に改善
+                </div>
+                <div class="finding">
+                    <strong>政策効果の二重構造</strong><br>
+                    保育施設拡充政策と少子化進行の相乗効果により量的問題は解決
+                </div>
+                <div class="finding">
+                    <strong>地域格差の顕在化</strong><br>
+                    大都市圏（東京・関西圏）への集中が継続、87.5%の自治体が待機児童ゼロを達成
+                </div>
+                <div class="finding">
+                    <strong>構造的課題の転換</strong><br>
+                    量的拡充から質的向上への政策転換期
+                </div>
+            </div>
+        </div>
+
+        <!-- メイン統計 -->
+        <div class="main-stats">
+            <div class="stat-card birth">
+                <h2>📉 出生数の変化</h2>
+                <div class="big-number">-39%</div>
+                <p>111万1千人 → 68万6千人</p>
+                <div class="change decrease">約42万人減少</div>
+                <p style="margin-top: 15px; font-size: 0.9rem; color: #666;">
+                    2024年に初の70万人割れ<br>
+                    合計特殊出生率：1.15（過去最低）
+                </p>
+            </div>
+            <div class="stat-card waiting">
+                <h2>📈 待機児童数の変化</h2>
+                <div class="big-number">-90%</div>
+                <p>26,081人 → 2,567人</p>
+                <div class="change decrease">約23,500人減少</div>
+                <p style="margin-top: 15px; font-size: 0.9rem; color: #666;">
+                    2017年ピークから劇的改善<br>
+                    6年連続減少継続
+                </p>
+            </div>
+        </div>
+
+        <!-- 地域別分析 -->
+        <div class="regional-analysis">
+            <h2>🗾 地域別格差分析（2023-2024年データ）</h2>
+            <div class="regional-grid">
+                <div class="regional-section">
+                    <h3>合計特殊出生率（2023年）</h3>
+                    <ul class="prefecture-list">
+                        <li class="high-rate">
+                            <span class="prefecture-name">沖縄県</span>
+                            <span class="prefecture-value">1.60</span>
+                        </li>
+                        <li class="high-rate">
+                            <span class="prefecture-name">宮崎県</span>
+                            <span class="prefecture-value">1.49</span>
+                        </li>
+                        <li class="high-rate">
+                            <span class="prefecture-name">長崎県</span>
+                            <span class="prefecture-value">1.49</span>
+                        </li>
+                        <li class="high-rate">
+                            <span class="prefecture-name">鹿児島県</span>
+                            <span class="prefecture-value">1.48</span>
+                        </li>
+                        <li class="low-rate">
+                            <span class="prefecture-name">東京都</span>
+                            <span class="prefecture-value">1.0未満（危機的）</span>
+                        </li>
+                    </ul>
+                    <p style="margin-top: 15px; font-size: 0.9rem; color: #666;">
+                        沖縄と東京の格差：0.6ポイント以上
+                    </p>
+                </div>
+                <div class="regional-section">
+                    <h3>待機児童数（2024年4月）</h3>
+                    <ul class="prefecture-list">
+                        <li class="high-rate">
+                            <span class="prefecture-name">沖縄県</span>
+                            <span class="prefecture-value">411人</span>
+                        </li>
+                        <li class="high-rate">
+                            <span class="prefecture-name">埼玉県</span>
+                            <span class="prefecture-value">347人</span>
+                        </li>
+                        <li class="high-rate">
+                            <span class="prefecture-name">東京都</span>
+                            <span class="prefecture-value">286人</span>
+                        </li>
+                        <li class="low-rate">
+                            <span class="prefecture-name">ゼロ達成県</span>
+                            <span class="prefecture-value">16県（青森、山形等）</span>
+                        </li>
+                    </ul>
+                    <p style="margin-top: 15px; font-size: 0.9rem; color: #666;">
+                        87.5%の自治体（1,524/1,741）がゼロ達成<br>
+                        大都市圏に60%集中
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 政策タイムライン -->
+        <div class="policy-timeline">
+            <h2>🏛️ 政策効果の詳細タイムライン</h2>
+            <div class="timeline-container">
+                <div class="timeline-line"></div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-dot start">📈</div>
+                    <div class="timeline-content">
+                        <div class="timeline-year">
+                            <span class="year-icon">🚀</span>
+                            2013年
+                        </div>
+                        <div class="timeline-title">待機児童解消加速化プラン開始</div>
+                        <div class="policy-details">
+                            <strong>目標：</strong>約40万人分の保育定員拡大<br>
+                            <strong>実績：</strong>2013-2015年で31万4千人分増加<br>
+                            <strong>背景：</strong>緊急集中取組期間として政策開始
+                        </div>
+                        <div class="timeline-stats">
+                            <span class="stat-badge">40万人定員目標</span>
+                            <span class="stat-badge success">31.4万人実績</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot peak">⚠️</div>
+                    <div class="timeline-content">
+                        <div class="timeline-year">
+                            <span class="year-icon">📊</span>
+                            2017年
+                        </div>
+                        <div class="timeline-title">待機児童数ピーク：26,081人</div>
+                        <div class="policy-details">
+                            <strong>社会問題化：</strong>「保育園落ちた日本死ね」問題<br>
+                            <strong>要因：</strong>潜在需要の顕在化により政策効果が相殺<br>
+                            <strong>影響：</strong>女性就業率向上に伴う保育需要急増
+                        </div>
+                        <div class="timeline-stats">
+                            <span class="stat-badge danger">26,081人</span>
+                            <span class="stat-badge warning">過去最高</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot transition">💰</div>
+                    <div class="timeline-content">
+                        <div class="timeline-year">
+                            <span class="year-icon">🔄</span>
+                            2021年
+                        </div>
+                        <div class="timeline-title">新子育て安心プラン開始</div>
+                        <div class="policy-details">
+                            <strong>目標：</strong>14万人分追加拡大<br>
+                            <strong>予算：</strong>1,440億円（雇用保険料率引き上げ等）<br>
+                            <strong>背景：</strong>女性就業率82%目標（25-44歳、2025年）
+                        </div>
+                        <div class="timeline-stats">
+                            <span class="stat-badge">14万人目標</span>
+                            <span class="stat-badge">1,440億円</span>
+                            <span class="stat-badge">就業率82%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot solution">✅</div>
+                    <div class="timeline-content">
+                        <div class="timeline-year">
+                            <span class="year-icon">🎯</span>
+                            2024年
+                        </div>
+                        <div class="timeline-title">量的問題ほぼ解決：2,567人</div>
+                        <div class="policy-details">
+                            <strong>成果：</strong>出生数初の70万人割れと政策効果の相乗作用<br>
+                            <strong>転換点：</strong>量から質への政策転換期<br>
+                            <strong>課題：</strong>地域格差解消と隠れ待機児童対策
+                        </div>
+                        <div class="timeline-stats">
+                            <span class="stat-badge success">2,567人</span>
+                            <span class="stat-badge success">-90%減少</span>
+                            <span class="stat-badge">質的向上期</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 国際比較 -->
+        <div class="international-comparison">
+            <h2>🌍 国際比較：合計特殊出生率</h2>
+            <div class="country-grid">
+                <div class="country-card">
+                    <div class="country-name">🇫🇷 フランス</div>
+                    <div class="fertility-rate">1.80</div>
+                    <div class="country-status">
+                        G7唯一の2.0超維持時期<br>
+                        PACS制度・包括的家族政策
+                    </div>
+                </div>
+                <div class="country-card">
+                    <div class="country-name">🇸🇪 スウェーデン</div>
+                    <div class="fertility-rate">1.75</div>
+                    <div class="country-status">
+                        40年継続政策<br>
+                        1974年世界初性別中立育休
+                    </div>
+                </div>
+                <div class="country-card">
+                    <div class="country-name">🇩🇪 ドイツ</div>
+                    <div class="fertility-rate">1.54</div>
+                    <div class="country-status">
+                        日本同様低水準<br>
+                        1.5下回る期間継続
+                    </div>
+                </div>
+                <div class="country-card">
+                    <div class="country-name">🇯🇵 日本</div>
+                    <div class="fertility-rate">1.15</div>
+                    <div class="country-status">
+                        過去最低レベル<br>
+                        韓国（0.72）に次ぐ低さ
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 経済・社会要因 -->
+        <div class="economic-factors">
+            <h2>💰 経済・社会要因の詳細分析</h2>
+            <div class="factor-grid">
+                <div class="factor-card">
+                    <div class="factor-title">経済的要因</div>
+                    <ul class="factor-stats">
+                        <li><strong>労働生産性：</strong>OECD38カ国中29位（2021年）</li>
+                        <li><strong>実質GDP成長率：</strong>0.1%（2023年10-12月期）</li>
+                        <li><strong>賃金停滞：</strong>他先進国比で著しく低い伸び</li>
+                        <li><strong>非正規雇用：</strong>女性就業者増加の大半</li>
+                    </ul>
+                </div>
+                <div class="factor-card">
+                    <div class="factor-title">社会的要因</div>
+                    <ul class="factor-stats">
+                        <li><strong>女性就業率：</strong>25-29歳86.9%、30-34歳79.4%</li>
+                        <li><strong>M字カーブ：</strong>1981年の深いM字から台形へ</li>
+                        <li><strong>晩婚化：</strong>平均初婚年齢・出産年齢上昇</li>
+                        <li><strong>都市化：</strong>大都市圏の子育てコスト増大</li>
+                    </ul>
+                </div>
+                <div class="factor-card">
+                    <div class="factor-title">保育政策効果</div>
+                    <ul class="factor-stats">
+                        <li><strong>保育定員拡大：</strong>2013-2015年で31万4千人分</li>
+                        <li><strong>保育士確保：</strong>求人倍率3.20倍（東京6.44倍）</li>
+                        <li><strong>潜在需要顕在化：</strong>隠れ待機児童約7万人</li>
+                        <li><strong>施設整備：</strong>量から質への転換期</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- チャート -->
+        <div class="charts-section">
+            <div class="chart-container">
+                <div class="chart-title">出生数の推移（万人）</div>
+                <div class="bar-chart">
+                    <div class="bar" style="height: 100%;">
+                        <div class="bar-label">2004</div>
+                        111
+                    </div>
+                    <div class="bar" style="height: 96%;">
+                        <div class="bar-label">2005</div>
+                        107
+                    </div>
+                    <div class="bar" style="height: 98%;">
+                        <div class="bar-label">2008</div>
+                        109
+                    </div>
+                    <div class="bar" style="height: 94%;">
+                        <div class="bar-label">2011</div>
+                        105
+                    </div>
+                    <div class="bar" style="height: 90%;">
+                        <div class="bar-label">2014</div>
+                        100
+                    </div>
+                    <div class="bar" style="height: 65%;">
+                        <div class="bar-label">2023</div>
+                        73
+                    </div>
+                    <div class="bar" style="height: 62%;">
+                        <div class="bar-label">2024</div>
+                        69
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">待機児童数の推移（千人）</div>
+                <div class="bar-chart">
+                    <div class="bar waiting-bar" style="height: 98%;">
+                        <div class="bar-label">2011</div>
+                        25.6
+                    </div>
+                    <div class="bar waiting-bar" style="height: 95%;">
+                        <div class="bar-label">2012</div>
+                        24.8
+                    </div>
+                    <div class="bar waiting-bar" style="height: 87%;">
+                        <div class="bar-label">2013</div>
+                        22.7
+                    </div>
+                    <div class="bar waiting-bar" style="height: 82%;">
+                        <div class="bar-label">2014</div>
+                        21.4
+                    </div>
+                    <div class="bar waiting-bar" style="height: 89%;">
+                        <div class="bar-label">2015</div>
+                        23.2
+                    </div>
+                    <div class="bar waiting-bar" style="height: 90%;">
+                        <div class="bar-label">2016</div>
+                        23.6
+                    </div>
+                    <div class="bar waiting-bar" style="height: 100%;">
+                        <div class="bar-label">2017</div>
+                        26.1
+                    </div>
+                    <div class="bar waiting-bar" style="height: 11%;">
+                        <div class="bar-label">2022</div>
+                        2.9
+                    </div>
+                    <div class="bar waiting-bar" style="height: 10%;">
+                        <div class="bar-label">2024</div>
+                        2.6
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 政策提言 -->
+        <div class="policy-recommendations">
+            <h2>📋 重要な政策提言</h2>
+            <div class="recommendations-grid">
+                <div class="recommendation-section">
+                    <h3>短期的課題（2025-2030年）</h3>
+                    <ul class="recommendation-list">
+                        <li><strong>地域格差解消：</strong>大都市圏の残存課題への集中的取り組み</li>
+                        <li><strong>質的向上：</strong>保育の質確保と保育士の専門性向上</li>
+                        <li><strong>隠れ待機児童：</strong>潜在的需要への対応システム構築</li>
+                    </ul>
+                </div>
+                <div class="recommendation-section">
+                    <h3>中長期的課題（2030年以降）</h3>
+                    <ul class="recommendation-list">
+                        <li><strong>少子化対策見直し：</strong>出生率向上への包括的政策体系構築</li>
+                        <li><strong>経済構造改革：</strong>賃金上昇・労働生産性向上</li>
+                        <li><strong>社会保障改革：</strong>現役世代負担軽減と持続可能な制度設計</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 重要な洞察 -->
+        <div class="key-insights">
+            <h2>💡 国際比較からの重要な洞察</h2>
+            <div class="insights-grid">
+                <div class="insight-card">
+                    <div class="insight-icon">🎯</div>
+                    <h3>現物給付重視</h3>
+                    <p>現金給付より保育サービス等現物給付が出生率向上に効果的</p>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-icon">⏰</div>
+                    <h3>長期継続性</h3>
+                    <p>40年スパンでの政策継続と社会全体でのコンセンサス形成が必要</p>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-icon">🔗</div>
+                    <h3>包括的アプローチ</h3>
+                    <p>労働・家族・教育政策の省庁横断的統合推進</p>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-icon">🏙️</div>
+                    <h3>地域特性対応</h3>
+                    <p>地域特性に応じた個別対応戦略の策定</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- フッター -->
+        <div class="footer">
+            <h3>📊 構造的転換期への対応</h3>
+            <p>量的な待機児童問題はほぼ解決。今後は質的向上と地域格差解消、急速な少子化への根本的対策として、現金給付から現物給付への政策重点移行と40年スパンでの長期継続政策の社会的コンセンサス形成が急務。</p>
+            <div class="data-source">
+                <strong>データ出典：</strong><br>
+                • 厚生労働省「人口動態統計」（2004-2024年）<br>
+                • こども家庭庁「保育所等関連状況取りまとめ」（2024年）<br>
+                • 国立社会保障・人口問題研究所「人口統計資料集」<br>
+                • 内閣府男女共同参画局「男女共同参画白書」<br>
+                • 政府統計の総合窓口（e-Stat）、OECD統計データベース<br>
+                • 首相官邸「待機児童解消加速化プラン」「新子育て安心プラン」関連資料<br><br>
+                <strong>分析対象期間：</strong> 2004年4月1日～2024年4月1日（20年間）<br>
+                <strong>最終更新日：</strong> 2024年12月10日
+            </div>
+        </div>
+    </div>
+</body>
+</html>
