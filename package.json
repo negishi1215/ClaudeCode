@@ -1,0 +1,28 @@
+{
+  "name": "claude-code-web-apps",
+  "version": "1.0.0",
+  "description": "Collection of web applications including games, schedule manager, and data analysis tools",
+  "main": "index.html",
+  "scripts": {
+    "dev": "python3 -m http.server 3000",
+    "preview": "python3 -m http.server 4173"
+  },
+  "keywords": [
+    "web-apps",
+    "games",
+    "html5",
+    "javascript",
+    "canvas",
+    "data-visualization"
+  ],
+  "author": "Claude Code Project",
+  "license": "MIT",
+  "homepage": "https://github.com/username/claude-code-web-apps",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/username/claude-code-web-apps.git"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

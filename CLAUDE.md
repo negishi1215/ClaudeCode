@@ -109,7 +109,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### 開発・テスト時の実行コマンド
 ```bash
-# HTMLファイルをブラウザで開く
+# ローカル開発サーバー起動
+npm run dev        # http://localhost:3000 でサーバー起動
+npm run preview    # http://localhost:4173 でプレビューサーバー起動
+
+# HTMLファイルをブラウザで直接開く
 open index.html                    # アプリケーション一覧を表示
 open summer_schedule.html          # macOS
 open stock_analyzer.html           # macOS
@@ -118,8 +122,6 @@ open tennis_game.html              # macOS
 open shooting_game.html            # macOS
 open bomber_game.html              # macOS
 open othello_game.html             # macOS
-
-# または直接ブラウザでファイルを開く
 ```
 
 ### デバッグ方法
@@ -171,3 +173,22 @@ open othello_game.html             # macOS
 - **エラーハンドリング**: 入力検証 → ユーザーフィードバック → 状態復旧
 
 各アプリケーション固有の処理詳細、共通パターン、アーキテクチャ特徴は@application_sequence_diagram.mdで包括的に説明されています。
+
+## デプロイメント
+
+### Vercelデプロイ設定
+プロジェクトはVercelでの静的サイトデプロイに対応しています：
+
+- **vercel.json**: 静的サイト用設定、ルーティング、キャッシュ設定
+- **package.json**: プロジェクト情報とローカル開発用スクリプト
+- **.gitignore**: Vercel、Node.js、IDE固有ファイルの除外設定
+
+### デプロイ手順
+1. GitHubリポジトリにpush
+2. Vercelでリポジトリ連携（Framework Preset: Other、ビルド設定不要）
+3. 自動デプロイ開始
+
+### 本番環境の特徴
+- 静的ファイル配信のため高速レスポンス
+- ファイル別キャッシュ設定（HTML/CSS/JS: 1時間、画像: 1年）
+- 全HTMLファイルへの直接アクセス対応
