@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webアプリケーション一覧</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic Pro', 'Yu Gothic', 'Meiryo', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .app-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .app-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+        }
+
+        .app-card h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+
+        .app-card p {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .app-link {
+            display: inline-block;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: opacity 0.3s ease;
+        }
+
+        .app-link:hover {
+            opacity: 0.9;
+        }
+
+        .category {
+            display: inline-block;
+            background: #f0f0f0;
+            color: #555;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .apps-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Webアプリケーション一覧</h1>
+        
+        <div class="apps-grid">
+            <div class="app-card">
+                <div class="category">スケジュール管理</div>
+                <h2>夏休みスケジュール管理</h2>
+                <p>夏休みの予定を効率的に管理できるアプリです。勉強、遊び、旅行、趣味、家族の時間をカテゴリ別に整理し、統計も表示されます。</p>
+                <a href="summer_schedule.html" class="app-link">アプリを開く</a>
+            </div>
+
+            <div class="app-card">
+                <div class="category">データ分析</div>
+                <h2>株価分析アプリ</h2>
+                <p>株価データの可視化と分析を行うアプリです。チャートを使って株価の動向を確認できます。</p>
+                <a href="stock_analyzer.html" class="app-link">アプリを開く</a>
+            </div>
+
+            <div class="app-card">
+                <div class="category">データ可視化</div>
+                <h2>出生数・待機児童数分析</h2>
+                <p>日本の出生数と保育所待機児童数の関係性を詳細に分析したインフォグラフィックです。政策データの視覚化と国際比較を提供します。</p>
+                <a href="birth_waiting_children_infographic.html" class="app-link">アプリを開く</a>
+            </div>
+
+            <div class="app-card">
+                <div class="category">ゲーム</div>
+                <h2>テニスゲーム</h2>
+                <p>プレイヤー vs AI対戦のテニスゲームです。マルチボールシステムで、10秒ごとに新しいボールが追加されます。</p>
+                <a href="tennis_game.html" class="app-link">アプリを開く</a>
+            </div>
+
+            <div class="app-card">
+                <div class="category">ゲーム</div>
+                <h2>ボンバーゲーム</h2>
+                <p>爆弾を設置して敵を倒すアクションゲームです。</p>
+                <a href="bomber_game.html" class="app-link">アプリを開く</a>
+            </div>
+
+            <div class="app-card">
+                <div class="category">ゲーム</div>
+                <h2>オセロゲーム</h2>
+                <p>クラシックなオセロゲームです。コンピューターと対戦できます。</p>
+                <a href="othello_game.html" class="app-link">アプリを開く</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
