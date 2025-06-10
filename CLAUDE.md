@@ -1,28 +1,28 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+このファイルは、このリポジトリのコードを扱う際のClaude Code (claude.ai/code) へのガイダンスを提供します。
 
-## Project Overview
+## プロジェクト概要
 
-This repository contains a single-file web application for summer schedule management (`summer_schedule.html`). It's a standalone HTML file with embedded CSS and JavaScript that provides a schedule management interface in Japanese.
+このリポジトリには、夏休みスケジュール管理用の単一ファイルWebアプリケーション（`summer_schedule.html`）が含まれています。これは埋め込みCSSとJavaScriptを含むスタンドアロンHTMLファイルで、日本語でのスケジュール管理インターフェースを提供します。
 
-## Architecture
+## アーキテクチャ
 
-- **Frontend**: Vanilla HTML/CSS/JavaScript in a single file
-- **Data Storage**: Browser localStorage for persistence
-- **Styling**: Embedded CSS with responsive grid layout and gradient design
-- **Functionality**: 
-  - Schedule CRUD operations
-  - Category-based organization (study, play, travel, hobby, family)
-  - Statistics display
-  - Date/time sorting
+- **フロントエンド**: 単一ファイルでのバニラHTML/CSS/JavaScript
+- **データストレージ**: 永続化のためのブラウザlocalStorage
+- **スタイリング**: レスポンシブグリッドレイアウトとグラデーションデザインを使用した埋め込みCSS
+- **機能**: 
+  - スケジュールCRUD操作
+  - カテゴリベースの整理（勉強、遊び、旅行、趣味、家族）
+  - 統計表示
+  - 日付/時刻ソート
 
-## Development
+## 開発
 
-To run the application, simply open `summer_schedule.html` in a web browser. No build process or server is required.
+アプリケーションを実行するには、単純に`summer_schedule.html`をWebブラウザで開くだけです。ビルドプロセスやサーバーは不要です。
 
-The application uses:
-- HTML5 form elements (date, time, text inputs)
-- CSS Grid for responsive layout
-- LocalStorage API for data persistence
-- Vanilla JavaScript for DOM manipulation
+アプリケーションで使用されている技術:
+- HTML5フォーム要素（date、time、textインプット）
+- レスポンシブレイアウト用CSS Grid
+- データ永続化用LocalStorage API
+- DOM操作用バニラJavaScript
