@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>夏休みスケジュール管理</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2d3436;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        .schedule-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #2d3436;
+        }
+        input, select, textarea {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #74b9ff;
+        }
+        .btn {
+            background: #74b9ff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background: #0984e3;
+        }
+        .schedule-list {
+            margin-top: 30px;
+        }
+        .schedule-item {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 16px;
+            position: relative;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .schedule-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+            background: #ffffff;
+        }
+        .schedule-date {
+            font-weight: bold;
+            color: #74b9ff;
+            font-size: 18px;
+        }
+        .schedule-time {
+            color: #636e72;
+            margin-left: 10px;
+        }
+        .schedule-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2d3436;
+            margin: 10px 0;
+        }
+        .schedule-description {
+            color: #636e72;
+            line-height: 1.6;
+        }
+        .schedule-category {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+        }
+        .category-study { background: #fd79a8; }
+        .category-play { background: #fdcb6e; }
+        .category-travel { background: #6c5ce7; }
+        .category-hobby { background: #00b894; }
+        .category-family { background: #e17055; }
+        .delete-btn {
+            background: #d63031;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        .delete-btn:hover {
+            background: #a83a3a;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #a29bfe, #6c5ce7);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+        }
+        .stat-label {
+            margin-top: 10px;
+        }
+        @media (max-width: 768px) {
+            .schedule-form {
+                grid-template-columns: 1fr;
+            }
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌻 夏休みスケジュール管理 🌻</h1>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalEvents">0</div>
+                <div class="stat-label">総イベント数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="upcomingEvents">0</div>
+                <div class="stat-label">今後の予定</div>
+            </div>
+        </div>
+
+        <div class="schedule-form">
+            <div class="form-group">
+                <label for="eventDate">日付:</label>
+                <input type="date" id="eventDate" required>
+            </div>
+            <div class="form-group">
+                <label for="eventTime">時間:</label>
+                <input type="time" id="eventTime">
+            </div>
+            <div class="form-group">
+                <label for="eventTitle">タイトル:</label>
+                <input type="text" id="eventTitle" placeholder="例: 海水浴" required>
+            </div>
+            <div class="form-group">
+                <label for="eventCategory">カテゴリ:</label>
+                <select id="eventCategory">
+                    <option value="study">勉強</option>
+                    <option value="play">遊び</option>
+                    <option value="travel">旅行</option>
+                    <option value="hobby">趣味</option>
+                    <option value="family">家族</option>
+                </select>
+            </div>
+            <div class="form-group" style="grid-column: 1 / -1;">
+                <label for="eventDescription">詳細:</label>
+                <textarea id="eventDescription" rows="3" placeholder="詳細な説明を入力してください"></textarea>
+            </div>
+            <div class="form-group" style="grid-column: 1 / -1;">
+                <button class="btn" onclick="addSchedule()">スケジュール追加</button>
+            </div>
+        </div>
+
+        <div class="schedule-list">
+            <h2>📅 スケジュール一覧</h2>
+            <div id="scheduleContainer">
+                <p style="text-align: center; color: #636e72;">スケジュールを追加してください</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let schedules = JSON.parse(localStorage.getItem('summerSchedules')) || [];
+
+        function saveSchedules() {
+            localStorage.setItem('summerSchedules', JSON.stringify(schedules));
+        }
+
+        function addSchedule() {
+            const date = document.getElementById('eventDate').value;
+            const time = document.getElementById('eventTime').value;
+            const title = document.getElementById('eventTitle').value;
+            const category = document.getElementById('eventCategory').value;
+            const description = document.getElementById('eventDescription').value;
+
+            if (!date || !title) {
+                alert('日付とタイトルは必須です！');
+                return;
+            }
+
+            const schedule = {
+                id: Date.now(),
+                date: date,
+                time: time,
+                title: title,
+                category: category,
+                description: description
+            };
+
+            schedules.push(schedule);
+            schedules.sort((a, b) => new Date(a.date + ' ' + (a.time || '00:00')) - new Date(b.date + ' ' + (b.time || '00:00')));
+            
+            saveSchedules();
+            displaySchedules();
+            clearForm();
+            updateStats();
+        }
+
+        function deleteSchedule(id) {
+            if (confirm('このスケジュールを削除しますか？')) {
+                schedules = schedules.filter(s => s.id !== id);
+                saveSchedules();
+                displaySchedules();
+                updateStats();
+            }
+        }
+
+        function clearForm() {
+            document.getElementById('eventDate').value = '';
+            document.getElementById('eventTime').value = '';
+            document.getElementById('eventTitle').value = '';
+            document.getElementById('eventCategory').value = 'study';
+            document.getElementById('eventDescription').value = '';
+        }
+
+        function displaySchedules() {
+            const container = document.getElementById('scheduleContainer');
+            
+            if (schedules.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #636e72;">スケジュールを追加してください</p>';
+                return;
+            }
+
+            container.innerHTML = schedules.map(schedule => {
+                const dateObj = new Date(schedule.date);
+                const formattedDate = dateObj.toLocaleDateString('ja-JP', {
+                    month: 'long',
+                    day: 'numeric',
+                    weekday: 'short'
+                });
+
+                return `
+                    <div class="schedule-item">
+                        <div class="schedule-category category-${schedule.category}">
+                            ${getCategoryName(schedule.category)}
+                        </div>
+                        <div class="schedule-date">
+                            ${formattedDate}
+                            ${schedule.time ? `<span class="schedule-time">${schedule.time}</span>` : ''}
+                        </div>
+                        <div class="schedule-title">${schedule.title}</div>
+                        ${schedule.description ? `<div class="schedule-description">${schedule.description}</div>` : ''}
+                        <button class="delete-btn" onclick="deleteSchedule(${schedule.id})">削除</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getCategoryName(category) {
+            const categories = {
+                study: '📚 勉強',
+                play: '🎮 遊び',
+                travel: '✈️ 旅行',
+                hobby: '🎨 趣味',
+                family: '👨‍👩‍👧‍👦 家族'
+            };
+            return categories[category] || category;
+        }
+
+        function updateStats() {
+            const totalEvents = schedules.length;
+            const today = new Date();
+            const upcomingEvents = schedules.filter(s => new Date(s.date) >= today).length;
+
+            document.getElementById('totalEvents').textContent = totalEvents;
+            document.getElementById('upcomingEvents').textContent = upcomingEvents;
+        }
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            displaySchedules();
+            updateStats();
+            
+            // 今日の日付をデフォルトに設定
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('eventDate').value = today;
+        });
+    </script>
+</body>
+</html>
