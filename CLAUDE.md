@@ -1,7 +1,5 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
 このファイルは、このリポジトリのコードを扱う際のClaude Code (claude.ai/code) へのガイダンスを提供します。
 
 ## プロジェクト概要
@@ -9,6 +7,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 このリポジトリには、複数の独立したWebアプリケーションとデータ分析レポートが含まれています。すべてのWebアプリケーションは単一ファイルのスタンドアロンHTMLファイルとして実装されており、日本語インターフェースを提供します。
 
 ## アーキテクチャ
+
+### プロジェクト構造
+```
+/
+├── *.html                    # 独立したWebアプリケーション
+├── *.md                     # 分析レポート・ドキュメント
+├── CLAUDE.md                # Claude Code開発ガイド
+└── application_sequence_diagram.md  # 処理フロー仕様
+```
+
+### 依存関係
+- **外部CDN**: Chart.js（株価分析アプリのみ）
+- **ブラウザAPI**: localStorage、DOM API
+- **ビルドツール**: なし（すべて単一ファイル構成）
 
 ### 共通技術スタック
 - **フロントエンド**: 単一ファイルでのバニラHTML/CSS/JavaScript
@@ -59,6 +71,32 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 すべてのHTMLアプリケーションは、Webブラウザで直接開くだけで動作します。ビルドプロセスやサーバーは不要です。
 
+### 開発・テスト時の実行コマンド
+```bash
+# HTMLファイルをブラウザで開く
+open summer_schedule.html          # macOS
+open stock_analyzer.html           # macOS
+open birth_waiting_children_infographic.html  # macOS
+
+# または直接ブラウザでファイルを開く
+```
+
+### デバッグ方法
+- ブラウザの開発者ツール（F12）でConsoleタブを使用
+- localStorageの確認: `localStorage.getItem('schedules')`
+- エラーログの確認: Console内でJavaScriptエラーを監視
+
+### 動作確認・テスト手順
+1. **スケジュール管理アプリ**: 
+   - 新規スケジュール追加→保存→リロード後の永続化確認
+   - 各カテゴリでの追加・削除・統計更新確認
+2. **株価分析アプリ**:
+   - 各銘柄コードでの分析実行→チャート表示確認
+   - 期間・間隔設定の動作確認
+3. **インフォグラフィック**:
+   - 各ブラウザ・デバイスサイズでのレスポンシブ表示確認
+   - 印刷時のレイアウト確認
+
 ## 開発時の注意点
 
 ### コードスタイル
@@ -75,3 +113,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **カラーパレット**: プライマリ色として青系グラデーション統一
 - **タイポグラフィ**: 日本語可読性を重視したフォント選択
 - **インタラクション**: ホバー効果、アニメーション、フィードバック重視
+
+## アプリケーション処理フロー
+
+各アプリケーションの詳細な処理シーケンスについては、@application_sequence_diagram.md を参照してください。
+
+### 処理フロー概要
+- **初期化パターン**: localStorage読み込み → データ処理 → UI表示
+- **CRUD操作**: バリデーション → データ更新 → 永続化 → UI再描画
+- **可視化処理**: データ変換 → Chart.js/CSS描画 → レスポンシブ調整
+- **エラーハンドリング**: 入力検証 → ユーザーフィードバック → 状態復旧
+
+各アプリケーション固有の処理詳細、共通パターン、アーキテクチャ特徴は@application_sequence_diagram.mdで包括的に説明されています。
