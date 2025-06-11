@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Webアプリケーション一覧</title>
+    <title>Claude Code Projects - プロジェクト一覧</title>
     <style>
         * {
             margin: 0;
@@ -19,23 +19,97 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
         }
 
         h1 {
             color: white;
-            text-align: center;
-            margin-bottom: 40px;
-            font-size: 2.5rem;
+            font-size: 3rem;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+        }
+
+        .section {
+            margin-bottom: 60px;
+        }
+
+        .section-title {
+            color: white;
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(45deg, #ffd700, #ff6b6b);
+            border-radius: 2px;
+        }
+
+        .featured-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
         }
 
         .apps-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 25px;
-            margin-top: 30px;
+        }
+
+        .featured-card {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            backdrop-filter: blur(15px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .featured-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            background-size: 300% 300%;
+            animation: gradient 3s ease infinite;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .featured-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 60px rgba(0,0,0,0.25);
         }
 
         .app-card {
@@ -52,16 +126,37 @@
             box-shadow: 0 12px 40px rgba(0,0,0,0.2);
         }
 
-        .app-card h2 {
+        .featured-card h2, .app-card h2 {
             color: #333;
             margin-bottom: 15px;
-            font-size: 1.4rem;
+            font-size: 1.5rem;
         }
 
-        .app-card p {
-            color: #666;
+        .featured-card h2 {
+            font-size: 1.8rem;
             margin-bottom: 20px;
-            line-height: 1.6;
+        }
+
+        .featured-card p, .app-card p {
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.7;
+        }
+
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 25px;
+        }
+
+        .tech-tag {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
         }
 
         .app-link {
@@ -69,40 +164,80 @@
             background: linear-gradient(45deg, #667eea, #764ba2);
             color: white;
             text-decoration: none;
-            padding: 12px 24px;
-            border-radius: 8px;
+            padding: 14px 28px;
+            border-radius: 10px;
             font-weight: bold;
-            transition: opacity 0.3s ease;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .featured-link {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            padding: 16px 32px;
+            font-size: 1.1rem;
         }
 
         .app-link:hover {
-            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
         }
 
         .category {
             display: inline-block;
             background: #f0f0f0;
             color: #555;
-            padding: 4px 12px;
+            padding: 6px 14px;
             border-radius: 20px;
             font-size: 0.8rem;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: linear-gradient(45deg, #ffd700, #ff6b6b);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-left: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
         }
 
         @media (max-width: 768px) {
-            .apps-grid {
+            .featured-grid, .apps-grid {
                 grid-template-columns: 1fr;
             }
             
             h1 {
-                font-size: 2rem;
+                font-size: 2.2rem;
+            }
+
+            .featured-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .featured-card, .app-card {
+                padding: 20px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Webアプリケーション一覧</h1>
+        <div class="header">
+            <h1>Claude Code Projects</h1>
+            <p class="subtitle">Next.js・React・AIを活用したプロジェクト集</p>
+        </div>
         
         <div class="apps-grid">
             <div class="app-card">
