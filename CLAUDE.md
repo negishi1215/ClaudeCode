@@ -6,36 +6,94 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## プロジェクト概要
 
-このリポジトリには、複数の独立したWebアプリケーションとデータ分析レポートが含まれています。すべてのWebアプリケーションは単一ファイルのスタンドアロンHTMLファイルとして実装されており、日本語インターフェースを提供します。
+このリポジトリには、**Claude Code講座のランディングページ**（Next.js + React + TypeScript）と、複数の独立したHTMLベースのWebアプリケーション・ゲーム・データ分析レポートが含まれています。
+
+### メインプロジェクト
+- **Claude Code講座ランディングページ**: Next.js App Routerを使用したモダンなWebサイト
+- **レガシーアプリケーション**: 単一ファイルのスタンドアロンHTMLアプリケーション群
 
 ## アーキテクチャ
 
 ### プロジェクト構造
 ```
 /
-├── index.html               # アプリケーション一覧ページ
-├── *.html                   # 独立したWebアプリケーション
-├── img_shooting/            # シューティングゲーム用画像アセット
-│   ├── img00.png           # プレイヤーキャラクター画像
-│   ├── img01.png           # 敵キャラクター画像1
-│   └── img02.png           # 敵キャラクター画像2
+├── app/                     # Next.js App Router
+│   ├── globals.css         # グローバルスタイル（Tailwind CSS）
+│   ├── layout.tsx          # ルートレイアウト
+│   └── page.tsx            # ホームページ
+├── components/             # Reactコンポーネント
+│   ├── Header.tsx          # ヘッダーコンポーネント
+│   ├── Footer.tsx          # フッターコンポーネント
+│   ├── advanced/           # 高度なUIコンポーネント
+│   │   ├── AdvancedHeroSection.tsx      # ヒーローセクション
+│   │   ├── AdvancedFeaturesSection.tsx  # 機能セクション
+│   │   ├── AIAssistantChat.tsx          # AIチャット機能
+│   │   ├── InteractiveCodeEditor.tsx    # インタラクティブエディタ
+│   │   ├── ParticleSystem.tsx           # パーティクルシステム
+│   │   └── DataVisualization.tsx        # データ可視化
+│   ├── sections/           # ページセクション
+│   │   ├── CurriculumSection.tsx        # カリキュラム
+│   │   ├── PricingSection.tsx           # 料金プラン
+│   │   ├── FAQSection.tsx               # FAQ
+│   │   └── CTASection.tsx               # Call to Action
+│   ├── ui/                 # 基本UIコンポーネント
+│   │   ├── Button.tsx      # ボタンコンポーネント
+│   │   ├── Card.tsx        # カードコンポーネント
+│   │   └── Container.tsx   # コンテナコンポーネント
+│   └── icons.tsx           # アイコンコンポーネント
+├── lib/                    # ユーティリティライブラリ
+│   └── utils.ts            # 共通ユーティリティ関数
+├── *.html                  # レガシーHTMLアプリケーション
+├── img_shooting/           # シューティングゲーム用画像アセット
 ├── *.md                    # 分析レポート・ドキュメント
-├── CLAUDE.md               # Claude Code開発ガイド
-└── application_sequence_diagram.md  # 処理フロー仕様
+├── package.json            # Node.js依存関係
+├── tailwind.config.js      # Tailwind CSS設定
+├── tsconfig.json           # TypeScript設定
+├── next.config.js          # Next.js設定
+├── postcss.config.js       # PostCSS設定
+└── vercel.json             # Vercelデプロイ設定
 ```
 
-### 依存関係
-- **外部CDN**: Chart.js（株価分析アプリのみ）
-- **ブラウザAPI**: localStorage、DOM API
-- **ビルドツール**: なし（すべて単一ファイル構成）
+### メインプロジェクト技術スタック
+- **フレームワーク**: Next.js 14 (App Router)
+- **言語**: TypeScript
+- **スタイリング**: Tailwind CSS
+- **UIライブラリ**: React 18
+- **アニメーション**: Framer Motion
+- **3D/パーティクル**: @react-three/fiber, @react-three/drei
+- **状態管理**: Zustand
+- **ユーティリティ**: clsx, tailwind-merge
+- **アイコン**: Lucide React
+- **エフェクト**: canvas-confetti, react-syntax-highlighter
+- **デプロイ**: Vercel
 
-### 共通技術スタック
-- **フロントエンド**: 単一ファイルでのバニラHTML/CSS/JavaScript
-- **データストレージ**: ブラウザlocalStorage（永続化が必要なアプリケーション）
-- **スタイリング**: レスポンシブデザイン、CSS Grid、グラデーション背景、モダンなUI要素
-- **国際化**: 日本語UI、日本のフォントスタック使用
+### レガシーアプリケーション技術スタック
+- **フロントエンド**: バニラHTML/CSS/JavaScript
+- **依存関係**: Chart.js（株価分析アプリのみ）
+- **データストレージ**: localStorage
+- **スタイリング**: CSS Grid、レスポンシブデザイン
 
 ### アプリケーション構成
+
+## Claude Code講座ランディングページ（メインプロジェクト）
+
+### コンポーネント構成
+- **AdvancedHeroSection**: 3Dパーティクル、インタラクティブコードエディタ、AIチャットデモ
+- **AdvancedFeaturesSection**: AI駆動学習機能の可視化、データビジュアライゼーション
+- **CurriculumSection**: 学習カリキュラムの詳細表示
+- **PricingSection**: 料金プランの比較表示
+- **FAQSection**: よくある質問
+- **CTASection**: コール・トゥ・アクション
+- **Header/Footer**: 共通UI要素
+
+### 高度なUI機能
+- **パーティクルシステム**: Three.jsベースの3Dエフェクト
+- **インタラクティブエディタ**: リアルタイムコードハイライト
+- **AIチャット機能**: 模擬Claude対話システム
+- **アニメーション**: Framer Motionによる高度なトランジション
+- **レスポンシブデザイン**: モバイルファーストアプローチ
+
+## レガシーHTMLアプリケーション群
 
 #### 1. 夏休みスケジュール管理 (`summer_schedule.html`)
 - **機能**: スケジュールCRUD操作、カテゴリベース整理、統計表示
@@ -79,6 +137,35 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 開発パターン
 
+## Next.jsプロジェクト開発時
+
+### コンポーネント開発
+1. **TypeScript優先**: 全てのコンポーネントはTypeScriptで記述
+2. **Tailwind CSS**: スタイリングにはTailwind CSSのユーティリティクラスを使用
+3. **コンポーネント分離**: UI、セクション、高度な機能ごとにディレクトリを分離
+4. **Forwardref使用**: 再利用可能なコンポーネントはReact.forwardRefを活用
+5. **动的インポート**: パフォーマンス最適化のためdynamic importを使用
+
+### アニメーション・エフェクト
+- **Framer Motion**: ページトランジション、要素アニメーション
+- **Three.js**: 3Dエフェクト、パーティクルシステム
+- **CSS-in-JS**: Tailwindのカスタムアニメーション定義
+- **Intersection Observer**: スクロールベースアニメーション
+
+### スタイリング設計
+- **デザインシステム**: colors、spacing、typography等の一貫性
+- **レスポンシブ**: Mobile-first approach
+- **ダークモード**: CSS variables対応
+- **グラデーション**: 独自のグラデーション背景定義
+
+### パフォーマンス最適化
+- **コード分割**: 重いコンポーネントの動的ローディング
+- **画像最適化**: Next.js Image optimization
+- **Bundle分析**: 依存関係の最適化
+- **SSR/SSG**: 適切なレンダリング戦略
+
+## レガシーHTML開発時
+
 ### 新しいWebアプリケーション作成時
 1. **単一ファイル形式**: すべてのCSS・JavaScriptを埋め込み
 2. **日本語対応**: フォントスタック `'Hiragino Sans', 'Hiragino Kaku Gothic Pro', 'Yu Gothic', 'Meiryo'`
@@ -105,13 +192,40 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 実行方法
 
+## Next.jsプロジェクト（メインプロジェクト）
+
+### 開発環境セットアップ
+```bash
+# 依存関係のインストール
+npm install
+
+# 開発サーバー起動（http://localhost:3000）
+npm run dev
+
+# 本番ビルド
+npm run build
+
+# 本番サーバー起動
+npm run start
+
+# リンター実行
+npm run lint
+```
+
+### 必要な環境
+- **Node.js**: >= 18.0.0
+- **npm**: 最新版推奨
+- **ブラウザ**: モダンブラウザ（Chrome, Firefox, Safari, Edge）
+
+## レガシーHTMLアプリケーション
+
 すべてのHTMLアプリケーションは、Webブラウザで直接開くだけで動作します。ビルドプロセスやサーバーは不要です。
 
 ### 開発・テスト時の実行コマンド
 ```bash
-# ローカル開発サーバー起動
-npm run dev        # http://localhost:3000 でサーバー起動
-npm run preview    # http://localhost:4173 でプレビューサーバー起動
+# レガシーHTMLアプリケーション開発用サーバー
+npm run legacy-dev        # Python HTTP server (http://localhost:3000)
+npm run legacy-preview    # Python HTTP server (http://localhost:4173)
 
 # HTMLファイルをブラウザで直接開く
 open index.html                    # アプリケーション一覧を表示
@@ -124,12 +238,30 @@ open bomber_game.html              # macOS
 open othello_game.html             # macOS
 ```
 
-### デバッグ方法
+## デバッグ・テスト方法
+
+### Next.jsプロジェクトのデバッグ
+- **React Developer Tools**: コンポーネント階層の確認
+- **Next.js DevTools**: パフォーマンス分析
+- **TypeScript**: 型チェックによるエラー早期発見
+- **Browser DevTools**: Network、Performance、Lighthouse分析
+- **ESLint**: コード品質チェック
+
+### レガシーHTMLアプリケーションのデバッグ
 - ブラウザの開発者ツール（F12）でConsoleタブを使用
 - localStorageの確認: `localStorage.getItem('schedules')`
 - エラーログの確認: Console内でJavaScriptエラーを監視
 
 ### 動作確認・テスト手順
+
+#### Next.jsプロジェクト
+1. **ビルド確認**: `npm run build` でエラーなしでビルド完了
+2. **レスポンシブ確認**: モバイル、タブレット、デスクトップでの表示確認
+3. **アニメーション確認**: Framer Motion、Three.jsエフェクトの動作確認
+4. **パフォーマンス確認**: Lighthouse scoreの確認（特にCLS、LCP）
+5. **アクセシビリティ確認**: キーボードナビゲーション、スクリーンリーダー対応
+
+#### レガシーHTMLアプリケーション
 1. **スケジュール管理アプリ**: 
    - 新規スケジュール追加→保存→リロード後の永続化確認
    - 各カテゴリでの追加・削除・統計更新確認
@@ -147,17 +279,39 @@ open othello_game.html             # macOS
 
 ## 開発時の注意点
 
-### コードスタイル
+### Next.jsプロジェクト開発ガイドライン
+
+#### コードスタイル
+- **TypeScript**: 厳格な型定義、interface活用
+- **React**: 関数コンポーネント、Hooks使用
+- **Tailwind CSS**: ユーティリティクラス、カスタムコンポーネント設計
+- **ESLint**: Next.js推奨設定に準拠
+
+#### パフォーマンス考慮事項
+- **Code Splitting**: 動的インポート活用
+- **Image Optimization**: next/image使用
+- **Bundle Analysis**: @next/bundle-analyzer使用
+- **Core Web Vitals**: LCP、FID、CLS最適化
+
+#### アクセシビリティ
+- **セマンティックHTML**: 適切なHTML要素使用
+- **ARIA**: ラベル、ロール設定
+- **キーボード操作**: フォーカス管理
+- **カラーコントラスト**: WCAG AA準拠
+
+### レガシーHTML開発ガイドライン
+
+#### コードスタイル
 - **JavaScript**: ES6+構文を使用、関数型プログラミングパターンを採用
 - **CSS**: CSS Grid、Flexbox、CSS変数を積極活用
 - **HTML**: セマンティックHTML5要素を使用、アクセシビリティ対応
 
-### データ管理パターン
+#### データ管理パターン
 - **localStorage**: JSONシリアル化でオブジェクト保存
 - **状態管理**: 単一の状態オブジェクトによる管理
 - **イベント処理**: delegationパターンを使用してメモリ効率化
 
-### UI/UXガイドライン
+#### UI/UXガイドライン
 - **カラーパレット**: プライマリ色として青系グラデーション統一
 - **タイポグラフィ**: 日本語可読性を重視したフォント選択
 - **インタラクション**: ホバー効果、アニメーション、フィードバック重視
@@ -176,19 +330,60 @@ open othello_game.html             # macOS
 
 ## デプロイメント
 
-### Vercelデプロイ設定
-プロジェクトはVercelでの静的サイトデプロイに対応しています：
+### Next.jsプロジェクトのデプロイ（推奨）
+
+#### Vercel（推奨プラットフォーム）
+```bash
+# Vercel CLIを使用したデプロイ
+npm install -g vercel
+vercel
+
+# または GitHub連携での自動デプロイ
+# 1. Vercelダッシュボードでリポジトリ連携
+# 2. Framework Preset: Next.js
+# 3. 自動ビルド・デプロイ開始
+```
+
+#### デプロイ設定
+- **next.config.js**: Next.js設定、画像最適化、出力設定
+- **package.json**: ビルドコマンド、依存関係
+- **tsconfig.json**: TypeScript設定
+- **tailwind.config.js**: スタイル設定
+
+#### 本番環境の特徴
+- **Edge Runtime**: グローバルCDN配信
+- **Automatic HTTPS**: SSL証明書自動設定
+- **Image Optimization**: 自動画像最適化
+- **API Routes**: サーバーレス関数
+- **Analytics**: Core Web Vitals監視
+
+### レガシーHTMLアプリケーションのデプロイ
+
+#### 静的サイトデプロイ設定
+プロジェクトは静的サイトデプロイにも対応しています：
 
 - **vercel.json**: 静的サイト用設定、ルーティング、キャッシュ設定
-- **package.json**: プロジェクト情報とローカル開発用スクリプト
-- **.gitignore**: Vercel、Node.js、IDE固有ファイルの除外設定
+- レガシーHTMLファイルの直接アクセス対応
 
-### デプロイ手順
+#### デプロイ手順
 1. GitHubリポジトリにpush
-2. Vercelでリポジトリ連携（Framework Preset: Other、ビルド設定不要）
-3. 自動デプロイ開始
+2. Vercelでリポジトリ連携（Framework Preset: Other）
+3. ビルド設定不要で自動デプロイ開始
 
-### 本番環境の特徴
+#### 本番環境の特徴
 - 静的ファイル配信のため高速レスポンス
 - ファイル別キャッシュ設定（HTML/CSS/JS: 1時間、画像: 1年）
 - 全HTMLファイルへの直接アクセス対応
+
+### 環境変数・設定
+
+#### 本番環境での注意点
+- **Node.js version**: >=18.0.0 必須
+- **TypeScript**: 厳格モードでビルド
+- **ESLint**: エラーなしでのビルド必須
+- **Bundle Size**: パフォーマンス監視
+
+#### CI/CD設定
+- **GitHub Actions**: 自動テスト、ビルド確認
+- **Vercel Preview**: プルリクエストプレビュー
+- **Lighthouse CI**: パフォーマンス監視

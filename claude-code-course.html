@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code講座 - AIプログラミングを学ぼう</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic Pro', 'Yu Gothic', 'Meiryo', sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Navigation */
+        nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #666;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #2563eb;
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #eff6ff 0%, #ffffff 50%, #dbeafe 100%);
+            padding: 8rem 2rem 4rem;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: #666;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .button-primary {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .button-secondary {
+            background: white;
+            color: #2563eb;
+            padding: 1rem 2rem;
+            border: 2px solid #2563eb;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .button-primary:hover,
+        .button-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Section Styles */
+        section {
+            padding: 4rem 2rem;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.25rem;
+            color: #666;
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            width: 4rem;
+            height: 4rem;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        /* Curriculum */
+        .curriculum-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+
+        .curriculum-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .curriculum-number {
+            width: 3rem;
+            height: 3rem;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        /* Pricing */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .pricing-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            position: relative;
+        }
+
+        .pricing-card.featured {
+            border: 2px solid #2563eb;
+            transform: scale(1.05);
+        }
+
+        .featured-badge {
+            position: absolute;
+            top: -0.75rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2563eb;
+            color: white;
+            padding: 0.25rem 1rem;
+            border-radius: 1rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .price {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin: 1rem 0;
+        }
+
+        .price-unit {
+            font-size: 1rem;
+            color: #666;
+        }
+
+        /* FAQ */
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            background: white;
+            margin-bottom: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .faq-question {
+            padding: 1.5rem;
+            font-weight: 600;
+            color: #1f2937;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .faq-answer {
+            padding: 1.5rem;
+            color: #666;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            text-align: center;
+        }
+
+        .cta-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .cta-section p {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        /* Footer */
+        footer {
+            background: #1f2937;
+            color: white;
+            padding: 3rem 2rem 1rem;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section a {
+            color: #9ca3af;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid #374151;
+            color: #9ca3af;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo">
+                📚 Claude Code講座
+            </div>
+            <ul class="nav-links">
+                <li><a href="#about">講座について</a></li>
+                <li><a href="#curriculum">カリキュラム</a></li>
+                <li><a href="#pricing">料金</a></li>
+                <li><a href="#faq">FAQ</a></li>
+            </ul>
+            <a href="#cta" class="cta-button">今すぐ申し込む</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Claude CodeでAIプログラミングをマスターしよう</h1>
+            <p>最先端のAIツール「Claude Code」を使って、効率的なプログラミング技術を身につけませんか？初心者から上級者まで、あなたのレベルに合わせた実践的な学習プログラムを提供します。</p>
+            <div class="hero-buttons">
+                <a href="#cta" class="button-primary">無料体験を始める</a>
+                <a href="#about" class="button-secondary">詳細を見る</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about">
+        <div class="container">
+            <h2 class="section-title">Claude Codeとは？</h2>
+            <p class="section-subtitle">Anthropic社が開発した最先端のAIプログラミングアシスタント。自然言語でのやり取りを通じて、高品質なコードの生成から複雑な問題解決まで幅広くサポートします。</p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">💻</div>
+                    <h3>高品質なコード生成</h3>
+                    <p>自然言語の指示から、最適化されたコードを瞬時に生成。複数の言語に対応し、ベストプラクティスに従った実装を提供します。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>インテリジェントな分析</h3>
+                    <p>既存のコードを理解し、改善点や潜在的な問題を特定。パフォーマンスの最適化やセキュリティの向上を提案します。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎓</div>
+                    <h3>学習サポート</h3>
+                    <p>コードの動作原理や設計思想を丁寧に説明。プログラミング初心者でも理解しやすい形で知識を伝授します。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Curriculum Section -->
+    <section id="curriculum" style="background: #f9fafb;">
+        <div class="container">
+            <h2 class="section-title">学習カリキュラム</h2>
+            <p class="section-subtitle">段階的に学習を進め、実践的なスキルを身につけます</p>
+            
+            <div class="curriculum-grid">
+                <div class="curriculum-card">
+                    <div class="curriculum-number">1</div>
+                    <h3>基礎編</h3>
+                    <ul>
+                        <li>• Claude Codeの基本操作</li>
+                        <li>• プロンプトエンジニアリング</li>
+                        <li>• 基本的なコード生成</li>
+                        <li>• デバッグテクニック</li>
+                    </ul>
+                </div>
+                <div class="curriculum-card">
+                    <div class="curriculum-number">2</div>
+                    <h3>実践編</h3>
+                    <ul>
+                        <li>• Webアプリケーション開発</li>
+                        <li>• API設計・実装</li>
+                        <li>• データベース操作</li>
+                        <li>• テスト駆動開発</li>
+                    </ul>
+                </div>
+                <div class="curriculum-card">
+                    <div class="curriculum-number">3</div>
+                    <h3>応用編</h3>
+                    <ul>
+                        <li>• アーキテクチャ設計</li>
+                        <li>• パフォーマンス最適化</li>
+                        <li>• セキュリティ対策</li>
+                        <li>• CI/CD導入</li>
+                    </ul>
+                </div>
+                <div class="curriculum-card">
+                    <div class="curriculum-number">4</div>
+                    <h3>マスター編</h3>
+                    <ul>
+                        <li>• 大規模システム開発</li>
+                        <li>• チーム開発手法</li>
+                        <li>• プロジェクト管理</li>
+                        <li>• 技術リーダーシップ</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing">
+        <div class="container">
+            <h2 class="section-title">料金プラン</h2>
+            <p class="section-subtitle">あなたの学習スタイルに合わせて選べるプラン</p>
+            
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3>ベーシック</h3>
+                    <div class="price">¥29,800<span class="price-unit">/月</span></div>
+                    <p>初心者向け</p>
+                    <ul style="text-align: left; margin: 2rem 0;">
+                        <li>✓ 基礎カリキュラム</li>
+                        <li>✓ 週1回のグループレッスン</li>
+                        <li>✓ チャットサポート</li>
+                        <li>✓ コミュニティアクセス</li>
+                    </ul>
+                    <a href="#cta" class="button-secondary" style="width: 100%; display: block; text-align: center;">プランを選択</a>
+                </div>
+                
+                <div class="pricing-card featured">
+                    <div class="featured-badge">人気</div>
+                    <h3>スタンダード</h3>
+                    <div class="price">¥49,800<span class="price-unit">/月</span></div>
+                    <p>実践重視</p>
+                    <ul style="text-align: left; margin: 2rem 0;">
+                        <li>✓ 全カリキュラム</li>
+                        <li>✓ 週2回の個別レッスン</li>
+                        <li>✓ 24時間サポート</li>
+                        <li>✓ プロジェクトレビュー</li>
+                        <li>✓ 就職サポート</li>
+                    </ul>
+                    <a href="#cta" class="button-primary" style="width: 100%; display: block; text-align: center;">プランを選択</a>
+                </div>
+                
+                <div class="pricing-card">
+                    <h3>プレミアム</h3>
+                    <div class="price">¥89,800<span class="price-unit">/月</span></div>
+                    <p>本格的なスキルアップ</p>
+                    <ul style="text-align: left; margin: 2rem 0;">
+                        <li>✓ 全カリキュラム + 特別講座</li>
+                        <li>✓ 毎日の個別指導</li>
+                        <li>✓ 専属メンター</li>
+                        <li>✓ 企業プロジェクト参加</li>
+                        <li>✓ 転職保証</li>
+                    </ul>
+                    <a href="#cta" class="button-secondary" style="width: 100%; display: block; text-align: center;">プランを選択</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" style="background: #f9fafb;">
+        <div class="container">
+            <h2 class="section-title">よくある質問</h2>
+            <p class="section-subtitle">受講に関する疑問にお答えします</p>
+            
+            <div class="faq-container">
+                <div class="faq-item">
+                    <div class="faq-question">❓ プログラミング未経験でも受講できますか？</div>
+                    <div class="faq-answer">はい、プログラミング未経験の方でも安心して受講いただけます。基礎から丁寧に指導し、Claude Codeの使い方を通じて自然にプログラミング概念を学べるカリキュラムを用意しています。</div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">❓ どのような言語を学習できますか？</div>
+                    <div class="faq-answer">JavaScript、Python、Java、Go、Rust など主要なプログラミング言語に対応しています。また、HTML/CSS、React、Next.js などのWeb技術についても学習できます。</div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">❓ 受講期間はどのくらいですか？</div>
+                    <div class="faq-answer">基礎編は3ヶ月、実践編は6ヶ月、応用編からマスター編まで含めると12ヶ月のプログラムです。ただし、個人のペースに合わせて調整可能です。</div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">❓ 就職・転職サポートはありますか？</div>
+                    <div class="faq-answer">スタンダードプラン以上では、履歴書・職務経歴書の添削、面接対策、企業紹介などの就職サポートを提供しています。プレミアムプランでは転職保証もあります。</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section id="cta" class="cta-section">
+        <div class="container">
+            <h2>今すぐClaude Code講座を始めませんか？</h2>
+            <p>無料体験レッスンで、Claude Codeの可能性を実感してください。あなたのプログラミングライフが大きく変わります。</p>
+            <div class="hero-buttons">
+                <a href="mailto:info@claude-code-course.com" class="button-primary" style="background: white; color: #2563eb;">無料体験を申し込む</a>
+                <a href="mailto:info@claude-code-course.com" class="button-secondary" style="border-color: white; color: white;">資料請求</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h3>📚 Claude Code講座</h3>
+                    <p>AIを活用したプログラミング学習で、未来のエンジニアを育成します。</p>
+                </div>
+                <div class="footer-section">
+                    <h3>講座情報</h3>
+                    <ul>
+                        <li><a href="#about">講座について</a></li>
+                        <li><a href="#curriculum">カリキュラム</a></li>
+                        <li><a href="#pricing">料金プラン</a></li>
+                        <li><a href="#faq">よくある質問</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>サポート</h3>
+                    <ul>
+                        <li><a href="mailto:info@claude-code-course.com">お問い合わせ</a></li>
+                        <li><a href="mailto:support@claude-code-course.com">技術サポート</a></li>
+                        <li><a href="#community">コミュニティ</a></li>
+                        <li><a href="index.html">その他のアプリ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>法的事項</h3>
+                    <ul>
+                        <li><a href="#privacy">プライバシーポリシー</a></li>
+                        <li><a href="#terms">利用規約</a></li>
+                        <li><a href="#company">会社概要</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Claude Code講座. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // スムーススクロール
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // ナビゲーションの背景透明度調整
+        window.addEventListener('scroll', function() {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 50) {
+                nav.style.background = 'rgba(255, 255, 255, 0.98)';
+            } else {
+                nav.style.background = 'rgba(255, 255, 255, 0.95)';
+            }
+        });
+    </script>
+</body>
+</html>
