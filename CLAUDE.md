@@ -8,8 +8,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 このリポジトリには、**Claude Code講座のランディングページ**（Next.js + React + TypeScript）と、複数の独立したHTMLベースのWebアプリケーション・ゲーム・データ分析レポートが含まれています。
 
-### メインプロジェクト
-- **Claude Code講座ランディングページ**: Next.js App Routerを使用したモダンなWebサイト
+### プロジェクト構成
+- **メインプロジェクト**: 高度なNext.js App Routerアプリケーション（ルートディレクトリ）
+- **Advanced Landing Page**: 革新的なUIライブラリを使用した最先端のランディングページ（`claude-code-advanced-landing/`フォルダ）
 - **レガシーアプリケーション**: 単一ファイルのスタンドアロンHTMLアプリケーション群
 
 ## アーキテクチャ
@@ -17,11 +18,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### プロジェクト構造
 ```
 /
-├── app/                     # Next.js App Router
+├── app/                     # Next.js App Router（メインプロジェクト）
 │   ├── globals.css         # グローバルスタイル（Tailwind CSS）
 │   ├── layout.tsx          # ルートレイアウト
 │   └── page.tsx            # ホームページ
-├── components/             # Reactコンポーネント
+├── claude-code-advanced-landing/  # 🚀 最先端ランディングページ（独立プロジェクト）
+│   ├── app/                # Next.js App Router
+│   ├── components/         # 革新的なReactコンポーネント
+│   │   ├── advanced/       # 3D/AI/インタラクティブコンポーネント
+│   │   ├── sections/       # ページセクション
+│   │   └── ui/            # 基本UIコンポーネント
+│   ├── package.json        # 独立した依存関係
+│   ├── tailwind.config.js  # カスタムアニメーション設定
+│   └── README.md          # 詳細なプロジェクト説明
+├── components/             # Reactコンポーネント（メインプロジェクト）
 │   ├── Header.tsx          # ヘッダーコンポーネント
 │   ├── Footer.tsx          # フッターコンポーネント
 │   ├── advanced/           # 高度なUIコンポーネント
@@ -60,12 +70,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **スタイリング**: Tailwind CSS
 - **UIライブラリ**: React 18
 - **アニメーション**: Framer Motion
-- **3D/パーティクル**: @react-three/fiber, @react-three/drei
+- **3D/パーティクル**: @react-three/fiber, @react-three/drei, three.js
 - **状態管理**: Zustand
 - **ユーティリティ**: clsx, tailwind-merge
 - **アイコン**: Lucide React
-- **エフェクト**: canvas-confetti, react-syntax-highlighter
+- **エフェクト**: canvas-confetti, react-syntax-highlighter, react-countup
 - **デプロイ**: Vercel
+
+### Advanced Landing Page技術スタック
+claude-code-advanced-landing/フォルダには最先端技術を使用したランディングページが含まれています：
+- **革新的UI**: 3Dパーティクルシステム、インタラクティブコードエディタ、AIチャットデモ
+- **高度なアニメーション**: カスタムTailwindアニメーション（aurora, neural-pulse, cosmic-drift, hologram, glitch, morph）
+- **パフォーマンス最適化**: 動的インポート、Suspense境界、コード分割
+- **モダンエフェクト**: ガラスモーフィズム、グラデーションアニメーション、マウス追跡ホバー
 
 ### レガシーアプリケーション技術スタック
 - **フロントエンド**: バニラHTML/CSS/JavaScript
@@ -192,10 +209,31 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 実行方法
 
-## Next.jsプロジェクト（メインプロジェクト）
+## Next.jsプロジェクト開発
 
-### 開発環境セットアップ
+### メインプロジェクト（ルートディレクトリ）
 ```bash
+# 依存関係のインストール
+npm install
+
+# 開発サーバー起動（http://localhost:3000）
+npm run dev
+
+# 本番ビルド
+npm run build
+
+# 本番サーバー起動
+npm run start
+
+# リンター実行
+npm run lint
+```
+
+### Advanced Landing Page（claude-code-advanced-landing/フォルダ）
+```bash
+# フォルダに移動
+cd claude-code-advanced-landing
+
 # 依存関係のインストール
 npm install
 
@@ -426,11 +464,27 @@ vercel
 - **段階的移行**: レガシーHTMLからNext.jsへの段階的移行可能
 - **共存**: 両方のアプローチが同一リポジトリで共存
 - **デプロイ**: 単一のVercelプロジェクトで両方をデプロイ可能
+- **Advanced Landing Page**: 独立したプロジェクトとして個別にデプロイ可能
 
 ### 今後の発展
 - **コンポーネント化**: レガシーHTMLの機能をReactコンポーネント化
 - **API統合**: Next.js API Routesでバックエンド機能追加
 - **PWA対応**: Progressive Web App化
 - **国際化**: i18n対応でマルチ言語サポート
+- **Advanced技術の活用**: claude-code-advanced-landingの革新的技術をメインプロジェクトに統合
+
+## 重要な開発ノート
+
+### Advanced Landing Pageの活用
+`claude-code-advanced-landing/`フォルダには、最先端技術を駆使した独立したランディングページが含まれています。このプロジェクトは：
+- **技術検証**: 新しいUI/UXパターンの実験場
+- **モジュール再利用**: 高度なコンポーネントをメインプロジェクトに移植可能
+- **独立デプロイ**: 完全に独立したプロジェクトとして運用可能
+
+### Three.js使用時の注意点
+Three.jsコンポーネント使用時は依存関係の競合に注意してください：
+- `@react-three/drei`のバージョン互換性確認
+- SSR（サーバーサイドレンダリング）では`dynamic import`と`ssr: false`を使用
+- パフォーマンス最適化のため、必要に応じてCSS-basedのfallbackを用意
 
 このCLAUDE.mdファイルは、プロジェクトの全体像を把握し、効率的な開発・保守を行うためのガイドラインです。新しい機能追加や変更時は、このガイドラインに従って一貫性を保ってください。
