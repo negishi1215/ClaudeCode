@@ -11,6 +11,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### プロジェクト構成
 - **メインプロジェクト**: 高度なNext.js App Routerアプリケーション（ルートディレクトリ）
 - **Advanced Landing Page**: 革新的なUIライブラリを使用した最先端のランディングページ（`claude-code-advanced-landing/`フォルダ）
+- **Claude Code Course HTML**: エレガントなデザインに最適化された単一ファイルランディングページ（`claude-code-course.html`）
 - **レガシーアプリケーション**: 単一ファイルのスタンドアロンHTMLアプリケーション群
 
 ## アーキテクチャ
@@ -53,6 +54,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 │   └── icons.tsx           # アイコンコンポーネント
 ├── lib/                    # ユーティリティライブラリ
 │   └── utils.ts            # 共通ユーティリティ関数
+├── claude-code-course.html # エレガントデザインのメインランディングページ
 ├── *.html                  # レガシーHTMLアプリケーション
 ├── img_shooting/           # シューティングゲーム用画像アセット
 ├── *.md                    # 分析レポート・ドキュメント
@@ -92,9 +94,10 @@ claude-code-advanced-landing/フォルダには最先端技術を使用したラ
 
 ### アプリケーション構成
 
-## Claude Code講座ランディングページ（メインプロジェクト）
+## Claude Code講座ランディングページ
 
-### コンポーネント構成
+### メインプロジェクト（Next.js/React）
+#### コンポーネント構成
 - **AdvancedHeroSection**: 3Dパーティクル、インタラクティブコードエディタ、AIチャットデモ
 - **AdvancedFeaturesSection**: AI駆動学習機能の可視化、データビジュアライゼーション
 - **CurriculumSection**: 学習カリキュラムの詳細表示
@@ -103,12 +106,28 @@ claude-code-advanced-landing/フォルダには最先端技術を使用したラ
 - **CTASection**: コール・トゥ・アクション
 - **Header/Footer**: 共通UI要素
 
-### 高度なUI機能
+#### 高度なUI機能
 - **パーティクルシステム**: Three.jsベースの3Dエフェクト
 - **インタラクティブエディタ**: リアルタイムコードハイライト
 - **AIチャット機能**: 模擬Claude対話システム
 - **アニメーション**: Framer Motionによる高度なトランジション
 - **レスポンシブデザイン**: モバイルファーストアプローチ
+
+### Claude Code Course HTML（単一ファイル版）
+エレガントで女性ウケするデザインに最適化されたスタンドアロンHTMLランディングページ。
+
+#### デザイン特徴
+- **エレガントカラーパレット**: パステル調の優しい色合い（ピンク、ラベンダー、ソフトブルー）
+- **控えめアニメーション**: 過度な動きを排除した上品なエフェクト
+- **背景システム**: 静的グラデーション背景（動的パーティクル無効化）
+- **優しいインタラクション**: gentlePulse、subtleFloat、softGlowアニメーション
+
+#### 技術実装
+- **Canvas無効化**: 動的背景レンダリングを無効化してパフォーマンス向上
+- **CSS変数設計**: エレガントなカラーシステム
+- **レスポンシブ統計表示**: 4カラムグリッド（desktop）→ 2×2（tablet）→ 1列（mobile）
+- **Web Audio API**: 控えめな音響フィードバック
+- **Intersection Observer**: スクロール連動アニメーション
 
 ## レガシーHTMLアプリケーション群
 
@@ -267,6 +286,7 @@ npm run legacy-preview    # Python HTTP server (http://localhost:4173)
 
 # HTMLファイルをブラウザで直接開く
 open index.html                    # アプリケーション一覧を表示
+open claude-code-course.html       # メインランディングページ（エレガントデザイン）
 open summer_schedule.html          # macOS
 open stock_analyzer.html           # macOS
 open birth_waiting_children_infographic.html  # macOS
@@ -350,9 +370,18 @@ open othello_game.html             # macOS
 - **イベント処理**: delegationパターンを使用してメモリ効率化
 
 #### UI/UXガイドライン
-- **カラーパレット**: プライマリ色として青系グラデーション統一
+- **カラーパレット**: 
+  - エレガントデザイン（claude-code-course.html）: パステル調の優しい色合い
+  - レガシーアプリ: プライマリ色として青系グラデーション統一
 - **タイポグラフィ**: 日本語可読性を重視したフォント選択
-- **インタラクション**: ホバー効果、アニメーション、フィードバック重視
+- **インタラクション**: 
+  - エレガントデザイン: 控えめで上品なアニメーション
+  - レガシーアプリ: ホバー効果、アニメーション、フィードバック重視
+- **アニメーション設計**:
+  - gentlePulse: 優しい拡縮エフェクト
+  - subtleFloat: 微妙な浮遊動作
+  - softGlow: 柔らかいグローエフェクト
+  - 回転・激しい動きは避ける（女性ウケ重視）
 
 ## アプリケーション処理フロー
 
@@ -472,6 +501,7 @@ vercel
 - **PWA対応**: Progressive Web App化
 - **国際化**: i18n対応でマルチ言語サポート
 - **Advanced技術の活用**: claude-code-advanced-landingの革新的技術をメインプロジェクトに統合
+- **デザイン統一**: claude-code-course.htmlのエレガントデザインパターンを他ページに適用
 
 ## 重要な開発ノート
 
@@ -486,5 +516,28 @@ Three.jsコンポーネント使用時は依存関係の競合に注意してく
 - `@react-three/drei`のバージョン互換性確認
 - SSR（サーバーサイドレンダリング）では`dynamic import`と`ssr: false`を使用
 - パフォーマンス最適化のため、必要に応じてCSS-basedのfallbackを用意
+
+### エレガントデザイン実装ガイドライン
+claude-code-course.htmlで採用されているエレガントデザインパターン：
+
+#### カラーシステム
+```css
+--neural-primary: #f8b5d1;    /* ソフトピンク */
+--neural-secondary: #d1a3e4;  /* ラベンダー */
+--quantum-cyan: #a8dadc;      /* ソフトブルー */
+--quantum-purple: #c8a2c8;    /* ライトパープル */
+--quantum-pink: #f1c0e8;      /* パステルピンク */
+```
+
+#### アニメーション原則
+- 回転アニメーションは避ける
+- 拡縮は1.02倍程度の微妙な変化
+- アニメーション速度は3-4秒でゆっくりと
+- 透明度変化は0.8-1.0の範囲
+
+#### パフォーマンス最適化
+- Canvas描画システムは無効化
+- 動的パーティクル生成を停止
+- CSS-onlyアニメーションを優先
 
 このCLAUDE.mdファイルは、プロジェクトの全体像を把握し、効率的な開発・保守を行うためのガイドラインです。新しい機能追加や変更時は、このガイドラインに従って一貫性を保ってください。
