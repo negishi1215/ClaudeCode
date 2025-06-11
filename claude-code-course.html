@@ -9,15 +9,15 @@
     <!-- 🎨 ULTRA-MODERN CSS VARIABLES & RESET -->
     <style>
         :root {
-            /* 🌈 Next-Gen Color Palette */
-            --neural-primary: #667eea;
-            --neural-secondary: #764ba2;
-            --quantum-cyan: #00f5ff;
-            --quantum-purple: #8b5cf6;
-            --quantum-pink: #ec4899;
-            --quantum-green: #22c55e;
-            --matrix-glow: #39ff14;
-            --cyber-orange: #ff6b35;
+            /* 🌸 Elegant Feminine Color Palette */
+            --neural-primary: #f8b5d1;
+            --neural-secondary: #d1a3e4;
+            --quantum-cyan: #a8dadc;
+            --quantum-purple: #c8a2c8;
+            --quantum-pink: #f1c0e8;
+            --quantum-green: #9fdf9f;
+            --matrix-glow: #ffd1dc;
+            --cyber-orange: #ffb3ba;
             
             /* 📐 Quantum Spacing */
             --space-quantum: clamp(1rem, 5vw, 3rem);
@@ -50,20 +50,14 @@
             font-family: var(--font-quantum);
             line-height: 1.6;
             color: #ffffff;
-            background: #000000;
+            background: linear-gradient(135deg, #2d1b69 0%, #11998e 50%, #38286d 100%);
             overflow-x: hidden;
             position: relative;
         }
 
-        /* 🌌 QUANTUM BACKGROUND SYSTEM */
+        /* 🌸 ELEGANT BACKGROUND SYSTEM */
         .quantum-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: -1;
-            pointer-events: none;
+            display: none;
         }
 
         .neural-background {
@@ -73,78 +67,50 @@
             width: 100%;
             height: 100%;
             background: 
-                radial-gradient(circle at 20% 80%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(34, 197, 94, 0.1) 0%, transparent 50%),
-                linear-gradient(135deg, #000000 0%, #0a0a0f 50%, #1a1a2e 100%);
+                radial-gradient(circle at 20% 80%, rgba(248, 181, 209, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(209, 163, 228, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(168, 218, 220, 0.05) 0%, transparent 50%);
             z-index: -2;
         }
 
-        /* 🎭 QUANTUM ANIMATIONS */
-        @keyframes quantumPulse {
+        /* 🎭 ELEGANT ANIMATIONS */
+        @keyframes gentlePulse {
             0%, 100% { 
-                transform: scale(1) rotate(0deg);
-                filter: hue-rotate(0deg) brightness(1);
+                transform: scale(1);
+                opacity: 0.8;
             }
             50% { 
-                transform: scale(1.05) rotate(180deg);
-                filter: hue-rotate(180deg) brightness(1.2);
-            }
-        }
-
-        @keyframes neuralFlow {
-            0% { 
-                transform: translateX(-100%);
-                opacity: 0;
-            }
-            50% { 
+                transform: scale(1.02);
                 opacity: 1;
             }
-            100% { 
-                transform: translateX(100vw);
-                opacity: 0;
-            }
         }
 
-        @keyframes matrixRain {
-            0% { 
-                transform: translateY(-100vh);
-                opacity: 0;
-            }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { 
-                transform: translateY(100vh);
-                opacity: 0;
-            }
-        }
-
-        @keyframes hologramFlicker {
+        @keyframes softGlow {
             0%, 100% { 
-                opacity: 0.9;
-                text-shadow: 0 0 10px currentColor;
+                box-shadow: 0 0 10px rgba(168, 218, 220, 0.3);
             }
             50% { 
-                opacity: 1;
-                text-shadow: 0 0 20px currentColor, 0 0 30px currentColor;
+                box-shadow: 0 0 20px rgba(168, 218, 220, 0.6);
             }
         }
 
-        @keyframes cosmicDrift {
+        @keyframes fadeInUp {
             0% { 
-                transform: translate(0, 0) rotate(0deg);
-            }
-            25% { 
-                transform: translate(50px, -30px) rotate(90deg);
-            }
-            50% { 
-                transform: translate(0, -60px) rotate(180deg);
-            }
-            75% { 
-                transform: translate(-50px, -30px) rotate(270deg);
+                transform: translateY(30px);
+                opacity: 0;
             }
             100% { 
-                transform: translate(0, 0) rotate(360deg);
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes subtleFloat {
+            0%, 100% { 
+                transform: translateY(0);
+            }
+            50% { 
+                transform: translateY(-10px);
             }
         }
 
@@ -201,7 +167,7 @@
             align-items: center;
             justify-content: center;
             font-size: 1.2rem;
-            animation: quantumPulse 3s infinite;
+            animation: gentlePulse 3s infinite;
         }
 
         .nav-links {
@@ -301,13 +267,13 @@
             gap: 0.75rem;
             background: rgba(0, 0, 0, 0.6);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(102, 126, 234, 0.3);
+            border: 1px solid rgba(168, 218, 220, 0.3);
             border-radius: 25px;
             padding: 0.5rem 1.5rem;
             margin-bottom: 2rem;
             font-family: var(--font-neural);
             font-size: 0.9rem;
-            animation: hologramFlicker 2s infinite;
+            animation: softGlow 3s infinite;
         }
 
         .status-indicator {
@@ -315,7 +281,7 @@
             height: 8px;
             background: var(--matrix-glow);
             border-radius: 50%;
-            animation: quantumPulse 1.5s infinite;
+            animation: gentlePulse 2s infinite;
         }
 
         .hero-title {
@@ -332,7 +298,7 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            animation: hologramFlicker 3s infinite;
+            animation: fadeInUp 1s ease-out;
         }
 
         .title-quantum {
@@ -340,7 +306,7 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            animation: hologramFlicker 3s infinite 0.5s;
+            animation: fadeInUp 1s ease-out 0.3s both;
         }
 
         .title-matrix {
@@ -348,7 +314,7 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            animation: hologramFlicker 3s infinite 1s;
+            animation: fadeInUp 1s ease-out 0.6s both;
         }
 
         .hero-subtitle {
@@ -424,18 +390,31 @@
 
         .hero-stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
-            max-width: 800px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            max-width: 1000px;
             margin: 0 auto;
+        }
+
+        @media (max-width: 768px) {
+            .hero-stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-stats {
+                grid-template-columns: 1fr;
+            }
         }
 
         .stat-card {
             background: rgba(0, 0, 0, 0.4);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(102, 126, 234, 0.3);
+            border: 1px solid rgba(168, 218, 220, 0.3);
             border-radius: 15px;
-            padding: 1.5rem;
+            padding: 1.25rem;
             text-align: center;
             transition: all 0.3s ease;
         }
@@ -556,7 +535,7 @@
             justify-content: center;
             font-size: 2rem;
             margin-bottom: 1.5rem;
-            animation: cosmicDrift 8s infinite;
+            animation: subtleFloat 4s infinite ease-in-out;
         }
 
         .feature-title {
@@ -652,7 +631,7 @@
             color: white;
             border: 4px solid #000;
             z-index: 10;
-            animation: quantumPulse 2s infinite;
+            animation: softGlow 3s infinite;
         }
 
         .phase-title {
@@ -741,7 +720,7 @@
             justify-content: center;
             font-size: 2.5rem;
             margin: 0 auto 1.5rem;
-            animation: cosmicDrift 6s infinite;
+            animation: subtleFloat 3s infinite ease-in-out;
         }
 
         .pricing-title {
@@ -828,24 +807,10 @@
             }
         }
 
-        /* 🎨 QUANTUM PARTICLES SYSTEM */
-        .quantum-particle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: var(--quantum-cyan);
-            border-radius: 50%;
-            pointer-events: none;
-            animation: matrixRain 3s linear infinite;
-        }
-
+        /* 🌸 ELEGANT PARTICLES SYSTEM (DISABLED) */
+        .quantum-particle,
         .neural-particle {
-            position: absolute;
-            width: 2px;
-            height: 20px;
-            background: linear-gradient(180deg, transparent, var(--matrix-glow), transparent);
-            pointer-events: none;
-            animation: matrixRain 4s linear infinite;
+            display: none;
         }
 
         /* 🔊 AUDIO VISUAL FEEDBACK */
@@ -882,14 +847,14 @@
             width: 3px;
             background: var(--quantum-cyan);
             border-radius: 2px;
-            animation: quantumPulse 0.5s infinite alternate;
+            animation: gentlePulse 1s infinite alternate;
         }
 
         .visualizer-bar:nth-child(1) { height: 8px; animation-delay: 0s; }
-        .visualizer-bar:nth-child(2) { height: 16px; animation-delay: 0.1s; }
-        .visualizer-bar:nth-child(3) { height: 12px; animation-delay: 0.2s; }
-        .visualizer-bar:nth-child(4) { height: 20px; animation-delay: 0.3s; }
-        .visualizer-bar:nth-child(5) { height: 6px; animation-delay: 0.4s; }
+        .visualizer-bar:nth-child(2) { height: 16px; animation-delay: 0.2s; }
+        .visualizer-bar:nth-child(3) { height: 12px; animation-delay: 0.4s; }
+        .visualizer-bar:nth-child(4) { height: 20px; animation-delay: 0.6s; }
+        .visualizer-bar:nth-child(5) { height: 6px; animation-delay: 0.8s; }
 
         /* 🌟 SCROLL ANIMATIONS */
         .reveal {
@@ -1283,7 +1248,7 @@
                 <!-- Company Info -->
                 <div>
                     <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem;">
-                        <div style="width: 48px; height: 48px; background: linear-gradient(135deg, var(--quantum-cyan), var(--quantum-purple)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; animation: quantumPulse 3s infinite;">
+                        <div style="width: 48px; height: 48px; background: linear-gradient(135deg, var(--quantum-cyan), var(--quantum-purple)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; animation: gentlePulse 4s infinite;">
                             🧠
                         </div>
                         <div>
@@ -1394,13 +1359,13 @@
 
             <!-- Quantum Status Indicator -->
             <div style="text-align: center; margin-top: 3rem;">
-                <div style="display: inline-flex; align-items: center; gap: 0.75rem; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(20px); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 25px; padding: 0.75rem 1.5rem; font-family: var(--font-neural);">
-                    <div style="width: 8px; height: 8px; background: var(--matrix-glow); border-radius: 50%; animation: quantumPulse 1.5s infinite;"></div>
-                    <span style="color: var(--quantum-cyan); font-size: 0.9rem; font-weight: 600;">QUANTUM SYSTEM STATUS: OPERATIONAL</span>
+                <div style="display: inline-flex; align-items: center; gap: 0.75rem; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(20px); border: 1px solid rgba(168, 218, 220, 0.3); border-radius: 25px; padding: 0.75rem 1.5rem; font-family: var(--font-neural);">
+                    <div style="width: 8px; height: 8px; background: var(--matrix-glow); border-radius: 50%; animation: gentlePulse 2s infinite;"></div>
+                    <span style="color: var(--quantum-cyan); font-size: 0.9rem; font-weight: 600;">ELEGANT SYSTEM STATUS: OPERATIONAL</span>
                     <div style="display: flex; gap: 2px;">
-                        <div style="width: 2px; height: 8px; background: var(--matrix-glow); border-radius: 1px; animation: quantumPulse 0.8s infinite;"></div>
-                        <div style="width: 2px; height: 8px; background: var(--matrix-glow); border-radius: 1px; animation: quantumPulse 0.8s infinite 0.2s;"></div>
-                        <div style="width: 2px; height: 8px; background: var(--matrix-glow); border-radius: 1px; animation: quantumPulse 0.8s infinite 0.4s;"></div>
+                        <div style="width: 2px; height: 8px; background: var(--matrix-glow); border-radius: 1px; animation: gentlePulse 1.5s infinite;"></div>
+                        <div style="width: 2px; height: 8px; background: var(--matrix-glow); border-radius: 1px; animation: gentlePulse 1.5s infinite 0.3s;"></div>
+                        <div style="width: 2px; height: 8px; background: var(--matrix-glow); border-radius: 1px; animation: gentlePulse 1.5s infinite 0.6s;"></div>
                     </div>
                 </div>
             </div>
@@ -1705,8 +1670,8 @@
         let quantumRenderer, animationController, audioEngine, performanceMonitor;
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Initialize all quantum systems
-            quantumRenderer = new QuantumRenderer();
+            // Initialize elegant systems (quantum renderer disabled)
+            // quantumRenderer = new QuantumRenderer();
             animationController = new QuantumAnimationController();
             audioEngine = new QuantumAudioEngine();
             performanceMonitor = new QuantumPerformanceMonitor();
@@ -1735,12 +1700,12 @@
                 });
             });
             
-            // Add quantum particles dynamically
-            setInterval(() => {
-                if (Math.random() < 0.1) {
-                    createQuantumParticle();
-                }
-            }, 1000);
+            // Dynamic particles disabled for elegant design
+            // setInterval(() => {
+            //     if (Math.random() < 0.1) {
+            //         createQuantumParticle();
+            //     }
+            // }, 1000);
         });
 
         // 🎯 Global Functions
