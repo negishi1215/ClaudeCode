@@ -387,3 +387,50 @@ vercel
 - **GitHub Actions**: 自動テスト、ビルド確認
 - **Vercel Preview**: プルリクエストプレビュー
 - **Lighthouse CI**: パフォーマンス監視
+
+## 設定ファイル詳細
+
+### Tailwind CSS設定 (`tailwind.config.js`)
+プロジェクトには高度なTailwind CSS設定が含まれています：
+
+#### カスタムカラーパレット
+- **Primary**: 青系グラデーション（50-950）
+- **Secondary**: オレンジ系グラデーション
+- **Accent**: 紫系グラデーション
+- **Neutral**: グレースケール
+
+#### カスタムアニメーション
+- **Framer Motion連携**: fade-in, slide-up, scale-in
+- **3Dエフェクト**: aurora, neural-pulse, cosmic-drift
+- **インタラクティブ**: hologram, glitch, morph
+- **パーティクル**: particle-float, matrix-rain
+
+#### 日本語フォント対応
+- **フォントスタック**: Inter + 日本語フォント
+- **ヒラギノ系**: 'Hiragino Sans', 'Hiragino Kaku Gothic Pro'
+- **Yu Gothic**: 'Yu Gothic', 'Meiryo'
+
+### TypeScript設定 (`tsconfig.json`)
+- **strict mode**: 厳格な型チェック
+- **Path mapping**: `@/*` エイリアス設定
+- **Next.js plugin**: App Router対応
+
+### Next.js設定 (`next.config.js`)
+- **画像最適化**: domains設定
+- **standalone出力**: Docker対応
+- **パフォーマンス最適化**: バンドルサイズ最適化
+
+## プロジェクト全体の考慮事項
+
+### 互換性とマイグレーション
+- **段階的移行**: レガシーHTMLからNext.jsへの段階的移行可能
+- **共存**: 両方のアプローチが同一リポジトリで共存
+- **デプロイ**: 単一のVercelプロジェクトで両方をデプロイ可能
+
+### 今後の発展
+- **コンポーネント化**: レガシーHTMLの機能をReactコンポーネント化
+- **API統合**: Next.js API Routesでバックエンド機能追加
+- **PWA対応**: Progressive Web App化
+- **国際化**: i18n対応でマルチ言語サポート
+
+このCLAUDE.mdファイルは、プロジェクトの全体像を把握し、効率的な開発・保守を行うためのガイドラインです。新しい機能追加や変更時は、このガイドラインに従って一貫性を保ってください。
