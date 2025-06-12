@@ -2,11 +2,53 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-このファイルは、このリポジトリのコードを扱う際のClaude Code (claude.ai/code) へのガイダンスを提供します。
+## Essential Commands
 
-## プロジェクト概要
+### Next.js Development (Main Project)
+```bash
+npm install          # Install dependencies
+npm run dev          # Start development server (http://localhost:3000)
+npm run build        # Production build
+npm run start        # Start production server
+npm run lint         # Run ESLint
+```
 
-このリポジトリには、**Claude Code講座のランディングページ**（Next.js + React + TypeScript）と、複数の独立したHTMLベースのWebアプリケーション・ゲーム・データ分析レポートが含まれています。
+### Legacy HTML Development  
+```bash
+npm run legacy-dev   # Python HTTP server for HTML files (http://localhost:3000)
+npm run legacy-preview # Python HTTP server for preview (http://localhost:4173)
+```
+
+### Advanced Landing Page (Separate Project)
+```bash
+cd claude-code-advanced-landing
+npm install && npm run dev    # Independent Next.js project
+```
+
+## Project Architecture
+
+This is a hybrid repository containing both modern Next.js applications and legacy HTML applications.
+
+### Core Architecture Patterns
+
+1. **Dual Development Approach**: 
+   - **Next.js/React** (modern): `/app`, `/components` - TypeScript, Tailwind CSS, App Router
+   - **Legacy HTML** (standalone): `*.html` files - vanilla JS, embedded CSS, localStorage
+
+2. **Three Independent Projects**:
+   - **Main Project** (root): Next.js landing page with advanced UI components
+   - **Advanced Landing Page** (`claude-code-advanced-landing/`): Experimental Next.js project with 3D effects
+   - **Legacy Applications** (`*.html`): Standalone web apps and games
+
+3. **Shared Design System**:
+   - Tailwind CSS with custom animations (aurora, neural-pulse, cosmic-drift)
+   - Japanese font optimization (`Hiragino Sans`, `Yu Gothic`, `Meiryo`)
+   - Consistent color palette: blue gradients (primary), pastel colors (elegant design)
+
+### Component Architecture (Next.js)
+- **Layered Structure**: `ui/` (basic) → `sections/` (page-level) → `advanced/` (complex features)
+- **Three.js Integration**: Dynamic imports with SSR safety (`ssr: false`)
+- **State Management**: Zustand for complex state, React hooks for local state
 
 ### プロジェクト構成
 - **メインプロジェクト**: 高度なNext.js App Routerアプリケーション（ルートディレクトリ）
@@ -539,5 +581,25 @@ claude-code-course.htmlで採用されているエレガントデザインパタ
 - Canvas描画システムは無効化
 - 動的パーティクル生成を停止
 - CSS-onlyアニメーションを優先
+
+## Development Workflow
+
+### For Next.js Development
+1. **Always run `npm run build` before committing** - ensures TypeScript compilation and production readiness
+2. **Component Development Pattern**: Create in `components/ui/` → move to `components/sections/` → advanced features in `components/advanced/`
+3. **Three.js Components**: Use dynamic imports with `ssr: false` to prevent SSR issues
+4. **Performance**: Use `next/image` for optimization, code splitting for heavy components
+
+### For Legacy HTML Development  
+1. **Single-file architecture**: All CSS/JS embedded in HTML files
+2. **When creating new HTML apps**: Add entry to `index.html` application list
+3. **Data persistence**: Use localStorage with JSON serialization pattern
+4. **Asset organization**: Images in dedicated folders (e.g., `img_shooting/`)
+
+### Common Patterns
+- **Japanese Typography**: Use established font stack for consistent rendering
+- **Responsive Design**: Mobile-first approach with CSS Grid/Flexbox
+- **Animation Design**: Gentle, elegant animations (avoid rotation for elegant designs)
+- **Color System**: Maintain consistency between Next.js (Tailwind) and HTML (CSS variables)
 
 このCLAUDE.mdファイルは、プロジェクトの全体像を把握し、効率的な開発・保守を行うためのガイドラインです。新しい機能追加や変更時は、このガイドラインに従って一貫性を保ってください。
