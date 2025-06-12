@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>シンプルペイントアプリ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic Pro', 'Yu Gothic', 'Meiryo', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tool-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tool-btn {
+            padding: 10px 15px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .tool-btn:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+
+        .tool-btn.active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        .size-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .size-slider {
+            width: 100px;
+            height: 4px;
+            background: #ddd;
+            border-radius: 2px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .size-slider::-webkit-slider-thumb {
+            width: 16px;
+            height: 16px;
+            background: #007bff;
+            border-radius: 50%;
+            cursor: pointer;
+            -webkit-appearance: none;
+        }
+
+        .size-display {
+            width: 20px;
+            height: 20px;
+            background: #333;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .canvas-container {
+            display: flex;
+            justify-content: center;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        canvas {
+            background: white;
+            cursor: crosshair;
+            display: block;
+        }
+
+        canvas.eraser {
+            cursor: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><rect width="15" height="8" x="2.5" y="6" fill="%23ff6b6b" rx="2"/></svg>'), auto;
+        }
+
+        .clear-btn {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+
+        .clear-btn:hover {
+            background: #c82333;
+        }
+
+        @media (max-width: 600px) {
+            .toolbar {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .tool-group {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>シンプルペイントアプリ</h1>
+        
+        <div class="toolbar">
+            <div class="tool-group">
+                <button class="tool-btn active" id="penTool">✏️ ペン</button>
+                <button class="tool-btn" id="eraserTool">🧽 消しゴム</button>
+            </div>
+            
+            <div class="tool-group">
+                <span>サイズ:</span>
+                <div class="size-control">
+                    <input type="range" class="size-slider" id="sizeSlider" min="1" max="50" value="5">
+                    <span class="size-display" id="sizeDisplay"></span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="canvas-container">
+            <canvas id="canvas" width="760" height="500"></canvas>
+        </div>
+        
+        <div style="text-align: center;">
+            <button class="clear-btn" id="clearBtn">🗑️ キャンバスをクリア</button>
+        </div>
+    </div>
+
+    <script>
+        class PaintApp {
+            constructor() {
+                this.canvas = document.getElementById('canvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.isDrawing = false;
+                this.currentTool = 'pen';
+                this.currentSize = 5;
+                
+                this.initializeElements();
+                this.setupEventListeners();
+                this.updateSizeDisplay();
+                
+                // Canvas settings
+                this.ctx.lineCap = 'round';
+                this.ctx.lineJoin = 'round';
+            }
+            
+            initializeElements() {
+                this.penTool = document.getElementById('penTool');
+                this.eraserTool = document.getElementById('eraserTool');
+                this.sizeSlider = document.getElementById('sizeSlider');
+                this.sizeDisplay = document.getElementById('sizeDisplay');
+                this.clearBtn = document.getElementById('clearBtn');
+            }
+            
+            setupEventListeners() {
+                // Tool selection
+                this.penTool.addEventListener('click', () => this.selectTool('pen'));
+                this.eraserTool.addEventListener('click', () => this.selectTool('eraser'));
+                
+                // Size control
+                this.sizeSlider.addEventListener('input', (e) => {
+                    this.currentSize = parseInt(e.target.value);
+                    this.updateSizeDisplay();
+                });
+                
+                // Clear button
+                this.clearBtn.addEventListener('click', () => this.clearCanvas());
+                
+                // Canvas drawing events
+                this.canvas.addEventListener('mousedown', (e) => this.startDrawing(e));
+                this.canvas.addEventListener('mousemove', (e) => this.draw(e));
+                this.canvas.addEventListener('mouseup', () => this.stopDrawing());
+                this.canvas.addEventListener('mouseout', () => this.stopDrawing());
+                
+                // Touch events for mobile
+                this.canvas.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    this.startDrawing(e.touches[0]);
+                });
+                this.canvas.addEventListener('touchmove', (e) => {
+                    e.preventDefault();
+                    this.draw(e.touches[0]);
+                });
+                this.canvas.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    this.stopDrawing();
+                });
+            }
+            
+            selectTool(tool) {
+                this.currentTool = tool;
+                
+                // Update button states
+                this.penTool.classList.toggle('active', tool === 'pen');
+                this.eraserTool.classList.toggle('active', tool === 'eraser');
+                
+                // Update canvas cursor
+                this.canvas.classList.toggle('eraser', tool === 'eraser');
+            }
+            
+            updateSizeDisplay() {
+                const size = Math.min(this.currentSize, 20);
+                this.sizeDisplay.style.width = size + 'px';
+                this.sizeDisplay.style.height = size + 'px';
+            }
+            
+            getMousePos(e) {
+                const rect = this.canvas.getBoundingClientRect();
+                return {
+                    x: e.clientX - rect.left,
+                    y: e.clientY - rect.top
+                };
+            }
+            
+            startDrawing(e) {
+                this.isDrawing = true;
+                const pos = this.getMousePos(e);
+                
+                this.ctx.beginPath();
+                this.ctx.moveTo(pos.x, pos.y);
+                
+                // Set drawing properties based on current tool
+                if (this.currentTool === 'pen') {
+                    this.ctx.globalCompositeOperation = 'source-over';
+                    this.ctx.strokeStyle = '#000000';
+                } else if (this.currentTool === 'eraser') {
+                    this.ctx.globalCompositeOperation = 'destination-out';
+                }
+                
+                this.ctx.lineWidth = this.currentSize;
+            }
+            
+            draw(e) {
+                if (!this.isDrawing) return;
+                
+                const pos = this.getMousePos(e);
+                this.ctx.lineTo(pos.x, pos.y);
+                this.ctx.stroke();
+            }
+            
+            stopDrawing() {
+                if (this.isDrawing) {
+                    this.isDrawing = false;
+                    this.ctx.beginPath();
+                }
+            }
+            
+            clearCanvas() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            }
+        }
+        
+        // Initialize the paint app when the page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            new PaintApp();
+        });
+    </script>
+</body>
+</html>
