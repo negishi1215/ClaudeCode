@@ -126,8 +126,16 @@
             cursor: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><rect width="15" height="8" x="2.5" y="6" fill="%23ff6b6b" rx="2"/></svg>'), auto;
         }
 
-        .clear-btn {
+        .action-buttons {
+            text-align: center;
             margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .clear-btn {
             padding: 10px 20px;
             background: #dc3545;
             color: white;
@@ -140,6 +148,21 @@
 
         .clear-btn:hover {
             background: #c82333;
+        }
+
+        .download-btn {
+            padding: 10px 20px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+
+        .download-btn:hover {
+            background: #218838;
         }
 
         @media (max-width: 600px) {
@@ -177,8 +200,9 @@
             <canvas id="canvas" width="760" height="500"></canvas>
         </div>
         
-        <div style="text-align: center;">
+        <div class="action-buttons">
             <button class="clear-btn" id="clearBtn">🗑️ キャンバスをクリア</button>
+            <button class="download-btn" id="downloadBtn">📥 JPGでダウンロード</button>
         </div>
     </div>
 
@@ -206,6 +230,7 @@
                 this.sizeSlider = document.getElementById('sizeSlider');
                 this.sizeDisplay = document.getElementById('sizeDisplay');
                 this.clearBtn = document.getElementById('clearBtn');
+                this.downloadBtn = document.getElementById('downloadBtn');
             }
             
             setupEventListeners() {
@@ -221,6 +246,9 @@
                 
                 // Clear button
                 this.clearBtn.addEventListener('click', () => this.clearCanvas());
+                
+                // Download button
+                this.downloadBtn.addEventListener('click', () => this.downloadCanvas());
                 
                 // Canvas drawing events
                 this.canvas.addEventListener('mousedown', (e) => this.startDrawing(e));
@@ -303,6 +331,45 @@
             
             clearCanvas() {
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            }
+            
+            downloadCanvas() {
+                // Create a new canvas with white background for JPG export
+                const exportCanvas = document.createElement('canvas');
+                const exportCtx = exportCanvas.getContext('2d');
+                
+                // Set the same dimensions as the original canvas
+                exportCanvas.width = this.canvas.width;
+                exportCanvas.height = this.canvas.height;
+                
+                // Fill with white background (JPG doesn't support transparency)
+                exportCtx.fillStyle = '#FFFFFF';
+                exportCtx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+                
+                // Draw the original canvas content on top
+                exportCtx.drawImage(this.canvas, 0, 0);
+                
+                // Generate filename with timestamp
+                const now = new Date();
+                const timestamp = now.getFullYear() +
+                    String(now.getMonth() + 1).padStart(2, '0') +
+                    String(now.getDate()).padStart(2, '0') + '_' +
+                    String(now.getHours()).padStart(2, '0') +
+                    String(now.getMinutes()).padStart(2, '0') +
+                    String(now.getSeconds()).padStart(2, '0');
+                const filename = `paint_${timestamp}.jpg`;
+                
+                // Convert to blob and create download link
+                exportCanvas.toBlob((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = filename;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                }, 'image/jpeg', 0.9);
             }
         }
         
